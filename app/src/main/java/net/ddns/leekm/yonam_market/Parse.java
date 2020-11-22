@@ -15,6 +15,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class Parse extends Thread{
@@ -61,6 +62,39 @@ public class Parse extends Thread{
             arrayList.add(temp);
         }
         return arrayList;
+    }
+
+    public MyItem getMyItem(){
+        Document doc = Jsoup.parse(data);
+        ArrayList<MyItem> arrayList = new ArrayList<>();
+
+
+        Elements boardtitle = doc.getElementsByTag("boardtitle");
+        Elements num = doc.getElementsByTag("num");
+        Elements date = doc.getElementsByTag("date");
+        Elements writer = doc.getElementsByTag("writer");
+        Elements text = doc.getElementsByTag("text");
+        Elements c_writer = doc.getElementsByTag("c_writer");
+        Elements c_date = doc.getElementsByTag("c_date");
+        Elements c_text = doc.getElementsByTag("c_text");
+        Elements c_num = doc.getElementsByTag("c_num");
+
+        Log.i("=============Comment size",c_writer.toString());
+        Log.i("=============Comment",Integer.toString(c_writer.size()));
+
+        MyItem myItem = new MyItem(boardtitle.first().text(), writer.first().text(), date.first().text(), num.first().text(), text.first().text());
+        for(int i=0; i<c_writer.size(); i++){
+            Comment c = new Comment();
+
+            c.set게시판_num(num.first().text());
+            c.setComment_num(c_num.get(i).text());
+            c.set내용(c_text.get(i).text());
+            c.set작성자(c_writer.get(i).text());
+            c.set등록일(c_date.get(i).text());
+            myItem.setComment(c);
+        }
+
+        return myItem;
     }
 
 }

@@ -89,6 +89,8 @@ public class MainBoard extends AppCompatActivity {
             TextView textView = view.findViewById(R.id.num);
             Log.i("Intent에 넣을 num값(글번호) : ",textView.getText().toString());
             intent.putExtra("board_num", textView.getText().toString());
+            Log.i("Intent에 넣을 게시판종류 : ",spinner2.getSelectedItem().toString());
+            intent.putExtra("board", spinner2.getSelectedItem().toString());
             startActivityForResult(intent,0);//액티비티 띄우기
         });
     }
