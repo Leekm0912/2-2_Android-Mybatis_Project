@@ -45,6 +45,7 @@ public class ChildBoard extends AppCompatActivity {
     String board_num;
     MyItem item;
     ListView listView;
+    TextView price; //가격
 
     public void init(){
         String url = "http://leekm.ddns.net:8080/yonam-market/market/getDetailBoard.jsp";
@@ -73,12 +74,14 @@ public class ChildBoard extends AppCompatActivity {
         date = findViewById(R.id.board_date);
         writer = findViewById(R.id.board_writer);
         mainText = findViewById(R.id.mainText);
+        price = findViewById(R.id.c_price);
 
         title.setText(item.getTitle());
         num.setText(item.getPostNumber());
         date.setText(item.getDate());
         writer.setText(item.getUserName());
         mainText.setText(item.getMainText());
+        price.setText(item.getPrice());
 
         // ListView 작업
         listView = findViewById(R.id.comment);

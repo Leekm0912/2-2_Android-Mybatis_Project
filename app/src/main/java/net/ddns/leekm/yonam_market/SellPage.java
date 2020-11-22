@@ -86,6 +86,7 @@ public class SellPage extends AppCompatActivity {
             //startActivityForResult(intent,0);//액티비티 띄우기
             Log.i("삽입완료","삽입완료");
         }
+        finish();
     }
 
     /*

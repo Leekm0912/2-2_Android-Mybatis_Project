@@ -36,6 +36,7 @@ public class MainBoard extends AppCompatActivity {
     TextView desc; // 자기소개
     Spinner spinner2;
     ListView listView;
+    TextView price;
 
     public void init(){
         String url = "http://leekm.ddns.net:8080/yonam-market/market/getBoard.jsp";
@@ -82,10 +83,6 @@ public class MainBoard extends AppCompatActivity {
         spinner2.setOnItemSelectedListener(new MyOnItemSelectedListener());
         //스피너
 
-        arrayList = new ArrayList<MyItem>();
-        arrayList.add(new MyItem("제목","이경민","2020-11-14","1"));
-        arrayList.add(new MyItem("제목2","이경민","2020-11-14","2"));
-
         init();
 
         listView.setOnItemClickListener((parent, view, position, l_position)->{
@@ -123,9 +120,6 @@ public class MainBoard extends AppCompatActivity {
 
     public class MyOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-            arrayList = new ArrayList<MyItem>();
-            arrayList.add(new MyItem("제목","이경민","2020-11-14","1"));
-            arrayList.add(new MyItem("제목2","이경민","2020-11-14","2"));
 
             String url = "http://leekm.ddns.net:8080/yonam-market/market/getBoard.jsp";
             ContentValues contentValues = new ContentValues();
@@ -202,10 +196,13 @@ public class MainBoard extends AppCompatActivity {
             TextView num = convertView.findViewById(R.id.num);
             TextView date = convertView.findViewById(R.id.date);
             TextView writer = convertView.findViewById(R.id.writer);
+            TextView price = convertView.findViewById(R.id.price);
             title.setText(list.get(position).getTitle());
             num.setText(list.get(position).getPostNumber());
             date.setText(list.get(position).getDate());
             writer.setText(list.get(position).getUserName());
+            price.setText(list.get(position).getPrice());
+
 
             return convertView;
         }

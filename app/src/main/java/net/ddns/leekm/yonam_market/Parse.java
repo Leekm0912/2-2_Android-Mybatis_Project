@@ -55,10 +55,11 @@ public class Parse extends Thread{
         Elements num = doc.getElementsByTag("num");
         Elements date = doc.getElementsByTag("date");
         Elements writer = doc.getElementsByTag("writer");
+        Elements price = doc.getElementsByTag("price");
         Log.i("=============Test : toString==========",boardtitle.toString());
         Log.i("=============Test : length==========",Integer.toString(boardtitle.size()));
         for(int i=0; i<boardtitle.size(); i++){
-            MyItem temp = new MyItem(boardtitle.get(i).text(), writer.get(i).text(), date.get(i).text(), num.get(i).text());
+            MyItem temp = new MyItem(boardtitle.get(i).text(), writer.get(i).text(), date.get(i).text(), num.get(i).text(), price.get(i).text());
             arrayList.add(temp);
         }
         return arrayList;
@@ -73,6 +74,7 @@ public class Parse extends Thread{
         Elements num = doc.getElementsByTag("num");
         Elements date = doc.getElementsByTag("date");
         Elements writer = doc.getElementsByTag("writer");
+        Elements price = doc.getElementsByTag("price");
         Elements text = doc.getElementsByTag("text");
         Elements c_writer = doc.getElementsByTag("c_writer");
         Elements c_date = doc.getElementsByTag("c_date");
@@ -82,7 +84,7 @@ public class Parse extends Thread{
         Log.i("=============Comment size",c_writer.toString());
         Log.i("=============Comment",Integer.toString(c_writer.size()));
 
-        MyItem myItem = new MyItem(boardtitle.first().text(), writer.first().text(), date.first().text(), num.first().text(), text.first().text());
+        MyItem myItem = new MyItem(boardtitle.first().text(), writer.first().text(), date.first().text(), num.first().text(),price.first().text(), text.first().text());
         for(int i=0; i<c_writer.size(); i++){
             Comment c = new Comment();
 

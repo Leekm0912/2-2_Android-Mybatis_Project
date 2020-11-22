@@ -11,23 +11,31 @@ class MyItem{
     private String date;
     private String postNumber;
     private String mainText;
+    private String price;
+
     private ArrayList<Comment> comment;
 
-    public MyItem(String title, String userName, String date, String postNumber) {
+    public MyItem(String title, String userName, String date, String postNumber, String price) {
         this.title = title;
         this.userName = userName;
         this.date = date;
         this.postNumber = postNumber;
+        this.price = price;
         comment = new ArrayList<Comment>();
     }
 
-    public MyItem(String title, String userName, String date, String postNumber, String mainText) {
+    public MyItem(String title, String userName, String date, String postNumber, String price,String mainText) {
         this.title = title;
         this.userName = userName;
         this.date = date;
         this.postNumber = postNumber;
         this.mainText = mainText;
+        this.price = price;
         comment = new ArrayList<Comment>();
+    }
+
+    public String getPrice() {
+        return price;
     }
 
     public ArrayList<Comment> getComment() {
