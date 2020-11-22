@@ -44,12 +44,9 @@ public class ChildBoard extends AppCompatActivity {
     Spinner spinner2;
     String board_num;
     MyItem item;
+    ListView listView;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_child_board);
-
+    public void init(){
         String url = "http://leekm.ddns.net:8080/yonam-market/market/getDetailBoard.jsp";
         ContentValues contentValues = new ContentValues();
         Intent intent = getIntent();
@@ -84,13 +81,42 @@ public class ChildBoard extends AppCompatActivity {
         mainText.setText(item.getMainText());
 
         // ListView 작업
-        ListView listView = findViewById(R.id.comment);
+        listView = findViewById(R.id.comment);
         myAdapter = new MyAdapter(this,R.layout.comment_layout, item.getComment());
         listView.setAdapter(myAdapter);
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_child_board);
+
+        init();
 
         listView.setOnItemClickListener((parent, view, position, l_position)->{
             Toast.makeText(ChildBoard.this,position,Toast.LENGTH_SHORT).show();
         });
+
+        listView.setOnItemLongClickListener((parent, view, position, id)->{
+            Intent new_intent = new Intent(this, Popup.class);
+            TextView c_writer = view.findViewById(R.id.c_writer);
+            String comment_num = item.getComment().get(position).getComment_num();
+            String comment_writer = c_writer.getText().toString();
+            AppData appData = (AppData)getApplication();
+            if(comment_writer.equals(appData.getUser().get이름())){ // 현재 접속중인 계정의 이름과 댓글의 이름이 같다면
+                new_intent.putExtra("data","댓글을 삭제하시겠습니까?");
+                new_intent.putExtra("type","Comment");
+                new_intent.putExtra("pos",comment_num);
+                startActivityForResult(new_intent,0);
+            }
+            return true;
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        init();
     }
 
     public void onClick(View v){

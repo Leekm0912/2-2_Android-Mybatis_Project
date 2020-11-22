@@ -15,7 +15,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ChildBoard"></activity>
+        <activity android:name=".Popup"
+            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"/>
+        <activity android:name=".ChildBoard" />
         <activity android:name=".SellPage" />
         <activity android:name=".MainBoard" />
         <activity android:name=".MainMenu" />

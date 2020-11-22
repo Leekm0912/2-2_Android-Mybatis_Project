@@ -35,6 +35,34 @@ public class MainBoard extends AppCompatActivity {
     TextView title; // 제목
     TextView desc; // 자기소개
     Spinner spinner2;
+    ListView listView;
+
+    public void init(){
+        String url = "http://leekm.ddns.net:8080/yonam-market/market/getBoard.jsp";
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("게시판",spinner2.getSelectedItem().toString());
+        String parse_data = null;
+
+        NetworkTask networkTask = new NetworkTask(this, url, contentValues, (AppData)getApplication());
+        try {
+            parse_data =  networkTask.execute().get(); // get()함수를 이용해 작업결과를 불러올 수 있음.
+            Log.i("1",parse_data);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Parse p = new Parse((AppData)getApplication() ,parse_data);
+        if(p.getNotice().equals("success")){
+            arrayList = p.getMyItemList();
+        }
+
+        // ListView 작업
+        listView = findViewById(R.id.list);
+        myAdapter = new MyAdapter(this,R.layout.listview_layout,arrayList);
+        listView.setAdapter(myAdapter);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,30 +86,7 @@ public class MainBoard extends AppCompatActivity {
         arrayList.add(new MyItem("제목","이경민","2020-11-14","1"));
         arrayList.add(new MyItem("제목2","이경민","2020-11-14","2"));
 
-        String url = "http://leekm.ddns.net:8080/yonam-market/market/getBoard.jsp";
-        ContentValues contentValues = new ContentValues();
-        contentValues.put("게시판",spinner2.getSelectedItem().toString());
-        String parse_data = null;
-
-        NetworkTask networkTask = new NetworkTask(this, url, contentValues, (AppData)getApplication());
-        try {
-            parse_data =  networkTask.execute().get(); // get()함수를 이용해 작업결과를 불러올 수 있음.
-            Log.i("1",parse_data);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        Parse p = new Parse((AppData)getApplication() ,parse_data);
-        if(p.getNotice().equals("success")){
-           arrayList = p.getMyItemList();
-        }
-
-        // ListView 작업
-        ListView listView = findViewById(R.id.list);
-        myAdapter = new MyAdapter(this,R.layout.listview_layout,arrayList);
-        listView.setAdapter(myAdapter);
+        init();
 
         listView.setOnItemClickListener((parent, view, position, l_position)->{
             // 암시적 호출하기
@@ -93,6 +98,27 @@ public class MainBoard extends AppCompatActivity {
             intent.putExtra("board", spinner2.getSelectedItem().toString());
             startActivityForResult(intent,0);//액티비티 띄우기
         });
+
+        listView.setOnItemLongClickListener((parent, view, position, id)->{
+            Intent intent = new Intent(this, Popup.class);
+            TextView writer = view.findViewById(R.id.writer);
+            TextView num = view.findViewById(R.id.num);
+            String board_num = writer.getText().toString();
+            AppData appData = (AppData)getApplication();
+            if(board_num.equals(appData.getUser().get이름())) { // 현재 접속중인 계정의 이름과 게시글의 이름이 같다면
+                intent.putExtra("data", "게시물을 삭제하시겠습니까?");
+                intent.putExtra("type", "mainBoard");
+                intent.putExtra("pos", num.getText().toString());
+                startActivityForResult(intent, 0);
+            }
+            return true;
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        init();
     }
 
     public class MyOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
