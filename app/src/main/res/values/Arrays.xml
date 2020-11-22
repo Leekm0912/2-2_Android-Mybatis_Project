@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="menu">
+        <item>전자기기</item>
+        <item>의류</item>
+        <item>식품</item>
+        <item>도서</item>
+        <item>기타</item>
+    </string-array>
+
+</resources>

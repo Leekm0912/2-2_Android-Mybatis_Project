@@ -1,0 +1,2 @@
+rootProject.name='YONAM_Market'
+include ':app'
