@@ -48,9 +48,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 parse_data =  networkTask.execute().get(); // get()함수를 이용해 작업결과를 불러올 수 있음.
                 Log.i("1",parse_data);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
