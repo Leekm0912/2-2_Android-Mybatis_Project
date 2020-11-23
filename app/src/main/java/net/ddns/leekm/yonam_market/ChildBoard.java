@@ -97,7 +97,7 @@ public class ChildBoard extends AppCompatActivity {
         init();
 
         listView.setOnItemClickListener((parent, view, position, l_position)->{
-            Toast.makeText(ChildBoard.this,position,Toast.LENGTH_SHORT).show();
+            // 작업안함.
         });
 
         listView.setOnItemLongClickListener((parent, view, position, id)->{
