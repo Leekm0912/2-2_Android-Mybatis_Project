@@ -58,7 +58,7 @@ public class SellPage extends AppCompatActivity {
     public void postSubmit(View v){
 
         RadioButton rb = findViewById(radioGroup.getCheckedRadioButtonId());
-        String url = "http://leekm.ddns.net:8080/yonam-market/market/postUpload.jsp";
+        String url = "http://220.66.111.200:8889/yonam-market/market/postUpload.jsp";
         String parse_data = null;
 
         // AsyncTask를 통해 HttpURLConnection 수행.

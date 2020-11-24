@@ -32,7 +32,7 @@ public class SignUp extends AppCompatActivity {
         Button submit = findViewById(R.id.submit);
         submit.setOnClickListener((v)->{
             // URL 설정.
-            String url = "http://leekm.ddns.net:8080/yonam-market/market/signUp.jsp";
+            String url = "http://220.66.111.200:8889/yonam-market/market/signUp.jsp";
 
             // AsyncTask를 통해 HttpURLConnection 수행.
             ContentValues contentValues = new ContentValues();

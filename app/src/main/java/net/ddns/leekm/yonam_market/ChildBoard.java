@@ -48,7 +48,7 @@ public class ChildBoard extends AppCompatActivity {
     TextView price; //가격
 
     public void init(){
-        String url = "http://leekm.ddns.net:8080/yonam-market/market/getDetailBoard.jsp";
+        String url = "http://220.66.111.200:8889/yonam-market/market/getDetailBoard.jsp";
         ContentValues contentValues = new ContentValues();
         Intent intent = getIntent();
         contentValues.put("게시판",intent.getStringExtra("board"));
@@ -123,7 +123,7 @@ public class ChildBoard extends AppCompatActivity {
     }
 
     public void onClick(View v){
-        String url = "http://leekm.ddns.net:8080/yonam-market/market/insertComment.jsp";
+        String url = "http://220.66.111.200:8889/yonam-market/market/insertComment.jsp";
         String parse_data = null;
 
         // AsyncTask를 통해 HttpURLConnection 수행.

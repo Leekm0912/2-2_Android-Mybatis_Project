@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
         insertPW = findViewById(R.id.insertPW);
         Button login = findViewById(R.id.login);
         login.setOnClickListener((v)->{
-            String url = "http://leekm.ddns.net:8080/yonam-market/market/signIn.jsp";
+            String url = "http://220.66.111.200:8889/yonam-market/market/signIn.jsp";
             String parse_data = null;
 
             // AsyncTask를 통해 HttpURLConnection 수행.

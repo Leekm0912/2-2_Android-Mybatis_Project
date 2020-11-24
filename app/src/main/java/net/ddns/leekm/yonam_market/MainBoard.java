@@ -39,7 +39,7 @@ public class MainBoard extends AppCompatActivity {
     TextView price;
 
     public void init(){
-        String url = "http://leekm.ddns.net:8080/yonam-market/market/getBoard.jsp";
+        String url = "http://220.66.111.200:8889/yonam-market/market/getBoard.jsp";
         ContentValues contentValues = new ContentValues();
         contentValues.put("게시판",spinner2.getSelectedItem().toString());
         String parse_data = null;
@@ -121,7 +121,7 @@ public class MainBoard extends AppCompatActivity {
     public class MyOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 
-            String url = "http://leekm.ddns.net:8080/yonam-market/market/getBoard.jsp";
+            String url = "http://220.66.111.200:8889/yonam-market/market/getBoard.jsp";
             ContentValues contentValues = new ContentValues();
             contentValues.put("게시판",spinner2.getSelectedItem().toString());
             String parse_data = null;
