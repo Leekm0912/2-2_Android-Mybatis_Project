@@ -37,7 +37,9 @@ public class NetworkTask extends AsyncTask<Void, Void, String> {
         //doInBackground()로 부터 리턴된 값이 onPostExecute()의 매개변수로 넘어오므로 s를 출력한다.
         Parse p = new Parse(appData, s);
         String result = p.getNotice();
-        Toast.makeText(context ,result,Toast.LENGTH_SHORT).show();
+        if(!result.equals("success")) {
+            Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
+        }
         //tv_outPut.setText(s);
     }
 

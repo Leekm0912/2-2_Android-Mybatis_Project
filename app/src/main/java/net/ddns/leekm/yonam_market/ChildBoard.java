@@ -137,7 +137,7 @@ public class ChildBoard extends AppCompatActivity {
             return;
         }
         AppData appData = (AppData)getApplication();
-        contentValues.put("작성자", appData.getUser().getID());
+        contentValues.put("작성자", appData.getUser().get이름());
         contentValues.put("게시판_num", board_num);
 
         NetworkTask networkTask = new NetworkTask(this, url, contentValues, (AppData)getApplication());

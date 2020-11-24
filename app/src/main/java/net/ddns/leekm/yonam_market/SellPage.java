@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
@@ -55,20 +56,31 @@ public class SellPage extends AppCompatActivity {
         radioGroup = findViewById(R.id.choose_group);
     }
 
-    public void postSubmit(View v){
+    public void postSubmit(View v) {
 
         RadioButton rb = findViewById(radioGroup.getCheckedRadioButtonId());
         String url = "http://220.66.111.200:8889/yonam-market/market/postUpload.jsp";
         String parse_data = null;
-
-        // AsyncTask를 통해 HttpURLConnection 수행.
         ContentValues contentValues = new ContentValues();
-        contentValues.put("제목",title.getText().toString());
-        contentValues.put("가격",price.getText().toString());
-        contentValues.put("내용",text.getText().toString());
-        contentValues.put("게시판",rb.getText().toString());
-        AppData appData = (AppData)getApplication();
-        contentValues.put("ID", appData.getUser().getID());
+        // AsyncTask를 통해 HttpURLConnection 수행.
+        try {
+            int price_value = Integer.parseInt(price.getText().toString());
+            contentValues.put("제목", title.getText().toString());
+            contentValues.put("가격", price_value);
+            contentValues.put("내용", text.getText().toString());
+            contentValues.put("게시판", rb.getText().toString());
+            AppData appData = (AppData) getApplication();
+            contentValues.put("ID", appData.getUser().getID());
+        }
+        /*catch (NumberFormatException ne){ //숫자가 아닌값을 price에 입력했을때.
+            ne.printStackTrace();
+            Toast.makeText(this, "가격은 숫자만 가능합니다.", Toast.LENGTH_SHORT).show();
+        }*/
+        catch(Exception e){
+            e.printStackTrace();
+            Toast.makeText(this, "빈칸이 있거나 잘못된 가격입니다.",Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         NetworkTask networkTask = new NetworkTask(this, url, contentValues, (AppData)getApplication());
         try {
