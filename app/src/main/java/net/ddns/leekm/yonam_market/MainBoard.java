@@ -102,7 +102,7 @@ public class MainBoard extends AppCompatActivity {
             TextView num = view.findViewById(R.id.num);
             String board_num = writer.getText().toString();
             AppData appData = (AppData)getApplication();
-            if(board_num.equals(appData.getUser().get이름())) { // 현재 접속중인 계정의 이름과 게시글의 이름이 같다면
+            if(board_num.equals(appData.getUser().get이름()) || appData.getUser().get이름().equals("admin")) { // 현재 접속중인 계정의 이름과 게시글의 이름이 같다면
                 intent.putExtra("data", "게시물을 삭제하시겠습니까?");
                 intent.putExtra("type", "mainBoard");
                 intent.putExtra("pos", num.getText().toString());

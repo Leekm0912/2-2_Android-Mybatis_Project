@@ -106,7 +106,7 @@ public class ChildBoard extends AppCompatActivity {
             String comment_num = item.getComment().get(position).getComment_num();
             String comment_writer = c_writer.getText().toString();
             AppData appData = (AppData)getApplication();
-            if(comment_writer.equals(appData.getUser().get이름())){ // 현재 접속중인 계정의 이름과 댓글의 이름이 같다면
+            if(comment_writer.equals(appData.getUser().get이름()) || appData.getUser().get이름().equals("admin")){ // 현재 접속중인 계정의 이름과 댓글의 이름이 같다면
                 new_intent.putExtra("data","댓글을 삭제하시겠습니까?");
                 new_intent.putExtra("type","Comment");
                 new_intent.putExtra("pos",comment_num);
