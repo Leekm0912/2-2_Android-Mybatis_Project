@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -110,6 +111,35 @@ public class MainBoard extends AppCompatActivity {
             }
             return true;
         });
+    }
+
+    public void search(View v){
+        String url = "http://220.66.111.200:8889/yonam-market/market/searchBoard.jsp";
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("게시판",spinner2.getSelectedItem().toString());
+        EditText editText = findViewById(R.id.search_text);
+        contentValues.put("ptn", editText.getText().toString());
+        String parse_data = null;
+
+        NetworkTask networkTask = new NetworkTask(this, url, contentValues, (AppData)getApplication());
+        try {
+            parse_data =  networkTask.execute().get(); // get()함수를 이용해 작업결과를 불러올 수 있음.
+            Log.i("1",parse_data);
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        Parse p = new Parse((AppData)getApplication() ,parse_data);
+        if(p.getNotice().equals("success")){
+            arrayList = p.getMyItemList();
+        }
+
+        // ListView 작업
+        listView = findViewById(R.id.list);
+        myAdapter = new MyAdapter(this,R.layout.listview_layout,arrayList);
+        listView.setAdapter(myAdapter);
     }
 
     @Override
