@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -39,10 +40,22 @@ public class MainActivity extends AppCompatActivity {
             String url = "http://220.66.111.200:8889/yonam-market/market/signIn.jsp";
             String parse_data = null;
 
+            String id = insertID.getText().toString();
+            String pw = insertPW.getText().toString();
+            if(id.matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*") || pw.matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*")) { // 한글이 포함되면.
+                Toast.makeText(this,"영문자, 특수문자만 사용 가능합니다.",Toast.LENGTH_SHORT).show();
+                return;
+            }else if(id.equals("")){
+                Toast.makeText(this,"아이디를 입력해 주세요",Toast.LENGTH_SHORT).show();
+                return;
+            }else if(pw.equals("")){
+                Toast.makeText(this,"패스워드를 입력해 주세요",Toast.LENGTH_SHORT).show();
+                return;
+            }
             // AsyncTask를 통해 HttpURLConnection 수행.
             ContentValues contentValues = new ContentValues();
-            contentValues.put("ID",insertID.getText().toString());
-            contentValues.put("PW",insertPW.getText().toString());
+            contentValues.put("ID",id);
+            contentValues.put("PW",pw);
 
             NetworkTask networkTask = new NetworkTask(this, url, contentValues, (AppData)getApplication());
             try {
@@ -58,8 +71,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this,MainMenu.class);
                 startActivityForResult(intent,0);//액티비티 띄우기
             }
-
-
         });
 
         Button signup = findViewById(R.id.signup);
