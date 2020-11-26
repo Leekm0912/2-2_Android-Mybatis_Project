@@ -19,6 +19,7 @@ public class Popup extends Activity {
     TextView textView;
     String type;
     String pos;
+    String board;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,20 +28,21 @@ public class Popup extends Activity {
         setContentView(R.layout.activity_popup);
 
 
-    //UI 객체생성
-    textView = findViewById(R.id.text);
+        //UI 객체생성
+        textView = findViewById(R.id.text);
 
-    //데이터 가져오기
-    Intent intent = getIntent();
-    String data = intent.getStringExtra("data");
-    textView.setText(data);
-    type = intent.getStringExtra("type");
-    pos = intent.getStringExtra("pos");
+        //데이터 가져오기
+        Intent intent = getIntent();
+        String data = intent.getStringExtra("data");
+        textView.setText(data);
+        type = intent.getStringExtra("type");
+        pos = intent.getStringExtra("pos");
+        board = intent.getStringExtra("board");
     }
 
 
-    //확인 버튼 클릭
-    public void apply(View v){
+    //삭제 버튼 클릭
+    public void delete(View v){
         //데이터 전달하기
         Intent new_intent = new Intent();
         if(type.equals("mainBoard")){ // 게시물 삭제
@@ -89,6 +91,27 @@ public class Popup extends Activity {
         }
 
 
+        setResult(RESULT_OK, new_intent);
+        //액티비티(팝업) 닫기
+        finish();
+    }
+
+    //수정 버튼 클릭
+    public void update(View v){
+        //데이터 전달하기
+        Intent new_intent = null;
+        if(type.equals("mainBoard")){ // 게시물 삭제
+            new_intent = new Intent(this, UpdateBoardPopup.class);
+            new_intent.putExtra("type", type);
+            new_intent.putExtra("pos", pos);
+            new_intent.putExtra("board",board);
+        }else if(type.equals("Comment")) { // 댓글 삭제
+            new_intent = new Intent(this, UpdateCommentPopup.class);
+            new_intent.putExtra("type", type);
+            new_intent.putExtra("pos", pos);
+            new_intent.putExtra("board",board);
+        }
+        startActivityForResult(new_intent,1);
         setResult(RESULT_OK, new_intent);
         //액티비티(팝업) 닫기
         finish();

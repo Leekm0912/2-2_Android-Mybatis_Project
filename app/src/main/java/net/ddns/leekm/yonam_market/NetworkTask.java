@@ -42,9 +42,4 @@ public class NetworkTask extends AsyncTask<Void, Void, String> {
         }
         //tv_outPut.setText(s);
     }
-
-    public int execute_return(String s){
-
-        return 0;
-    }
 }

@@ -101,11 +101,13 @@ public class MainBoard extends AppCompatActivity {
             Intent intent = new Intent(this, Popup.class);
             TextView writer = view.findViewById(R.id.writer);
             TextView num = view.findViewById(R.id.num);
+
             String board_num = writer.getText().toString();
             AppData appData = (AppData)getApplication();
             if(board_num.equals(appData.getUser().get이름()) || appData.getUser().get이름().equals("admin")) { // 현재 접속중인 계정의 이름과 게시글의 이름이 같다면
-                intent.putExtra("data", "게시물을 삭제하시겠습니까?");
+                intent.putExtra("data", "작업을 선택해 주세요.");
                 intent.putExtra("type", "mainBoard");
+                intent.putExtra("board", spinner2.getSelectedItem().toString());
                 intent.putExtra("pos", num.getText().toString());
                 startActivityForResult(intent, 0);
             }
@@ -125,9 +127,7 @@ public class MainBoard extends AppCompatActivity {
         try {
             parse_data =  networkTask.execute().get(); // get()함수를 이용해 작업결과를 불러올 수 있음.
             Log.i("1",parse_data);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
 
@@ -160,9 +160,7 @@ public class MainBoard extends AppCompatActivity {
             try {
                 parse_data =  networkTask.execute().get(); // get()함수를 이용해 작업결과를 불러올 수 있음.
                 Log.i("1",parse_data);
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
+            } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
 

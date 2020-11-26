@@ -97,6 +97,7 @@ public class SellPage extends AppCompatActivity {
             //Intent intent = new Intent(this,MainMenu.class);
             //startActivityForResult(intent,0);//액티비티 띄우기
             Log.i("삽입완료","삽입완료");
+            Toast.makeText(this,"게시물 작성 완료",Toast.LENGTH_SHORT).show();
         }
         finish();
     }
