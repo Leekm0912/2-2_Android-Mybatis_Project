@@ -16,7 +16,7 @@ public class MainMenu extends AppCompatActivity {
 
         TextView textView = findViewById(R.id.info);
         AppData appData = (AppData)getApplication();
-        textView.setText("접속계정 : "+appData.getUser().getID() +"\n"+"이름 : "+ appData.getUser().get이름()+"\n"+"ip : "+appData.getUser().getIP());
+        textView.setText("접속계정 : "+appData.getUser().getID() +"\n"+"이름 : "+ appData.getUser().get이름());
     }
 
     public void buy(View v){
@@ -26,6 +26,11 @@ public class MainMenu extends AppCompatActivity {
 
     public void sell(View v){
         Intent intent = new Intent(this,SellPage.class);
-        startActivityForResult(intent,0);//액티비티 띄우기
+        startActivityForResult(intent,1);//액티비티 띄우기
+    }
+
+    public void myInfo(View v){
+        Intent intent = new Intent(this, MyInfo.class);
+        startActivityForResult(intent,2);
     }
 }

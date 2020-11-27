@@ -1,7 +1,10 @@
 package net.ddns.leekm.yonam_market;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
@@ -23,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText insertID;
     private EditText insertPW;
+    private TextView version_textView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
 
         insertID = findViewById(R.id.insertID);
         insertPW = findViewById(R.id.insertPW);
+
+        version_textView = findViewById(R.id.version);
+        version_textView.setText("Version : "+getVersionInfo(this)+"  "); // 버젼 가져오기
+
         Button login = findViewById(R.id.login);
         login.setOnClickListener((v)->{
             String url = "http://220.66.111.200:8889/yonam-market/market/signIn.jsp";
@@ -78,6 +86,17 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this,SignUp.class);
             startActivityForResult(intent,0);//액티비티 띄우기
         });
+    }
+
+    public String getVersionInfo(Context context){
+        String version = null;
+        try {
+            PackageInfo i = context.getPackageManager().getPackageInfo(context.getPackageName(), 0);
+            version = i.versionName;
+        } catch(PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        return version;
     }
 
 }
