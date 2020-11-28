@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="net.ddns.leekm.yonam_market"
-    android:versionCode="6"
-    android:versionName="1.6">
+    package="net.ddns.leekm.yonam_market">
     <!-- 네트워크 사용에 대한 퍼미션 -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -17,9 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
+        <activity android:name=".MyinfoUpdate"></activity>
         <activity
             android:name=".MyInfo"
-            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar"/>
+            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
         <activity android:name=".UpdateCommentPopup" />
         <activity android:name=".UpdateBoardPopup" />
         <activity
