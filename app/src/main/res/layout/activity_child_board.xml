@@ -106,7 +106,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:maxHeight="400dp"
-        tools:srcCompat="@tools:sample/avatars" />
+        tools:srcCompat="@tools:sample/avatars"
+        android:adjustViewBounds="true"
+        />
 
     <TextView
         android:id="@+id/mainText"
