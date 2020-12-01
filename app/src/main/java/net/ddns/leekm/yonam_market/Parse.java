@@ -1,26 +1,20 @@
 package net.ddns.leekm.yonam_market;
 
-import android.app.Application;
 import android.util.Log;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 import org.w3c.dom.NodeList;
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class Parse extends Thread{
     private String data;
     AppData appData;
+    public static final String ABSOLUTE_FILE_PATH = "http://leekm0912.i234.me/img/";
+    //public static final String ABSOLUTE_FILE_PATH = "http://220.66.111.200:8889/yonam-market/market/img_upload/img/";
 
     public Parse(AppData appData, String data){
         this.data = data;
@@ -56,10 +50,18 @@ public class Parse extends Thread{
         Elements date = doc.getElementsByTag("date");
         Elements writer = doc.getElementsByTag("writer");
         Elements price = doc.getElementsByTag("price");
+        Elements filepath = doc.getElementsByTag("filepath");
         Log.i("=============Test : toString==========",boardtitle.toString());
         Log.i("=============Test : length==========",Integer.toString(boardtitle.size()));
         for(int i=0; i<boardtitle.size(); i++){
-            MyItem temp = new MyItem(boardtitle.get(i).text(), writer.get(i).text(), date.get(i).text(), num.get(i).text(), price.get(i).text());
+            String s = filepath.get(i).text();
+            MyItem temp;
+            if(s.equals("")){
+                temp = new MyItem(boardtitle.get(i).text(), writer.get(i).text(), date.get(i).text(), num.get(i).text(), price.get(i).text(), null);
+            }else{
+                temp = new MyItem(boardtitle.get(i).text(), writer.get(i).text(), date.get(i).text(), num.get(i).text(), price.get(i).text(), ABSOLUTE_FILE_PATH + s);
+            }
+
             arrayList.add(temp);
         }
         return arrayList;
@@ -76,6 +78,8 @@ public class Parse extends Thread{
         Elements writer = doc.getElementsByTag("writer");
         Elements price = doc.getElementsByTag("price");
         Elements text = doc.getElementsByTag("text");
+        Elements filepath = doc.getElementsByTag("filepath");
+
         Elements c_writer = doc.getElementsByTag("c_writer");
         Elements c_date = doc.getElementsByTag("c_date");
         Elements c_text = doc.getElementsByTag("c_text");
@@ -83,8 +87,14 @@ public class Parse extends Thread{
 
         Log.i("=============Comment size",c_writer.toString());
         Log.i("=============Comment",Integer.toString(c_writer.size()));
+        String s = filepath.first().text();
+        MyItem myItem;
+        if(s.equals("")) {
+            myItem = new MyItem(boardtitle.first().text(), writer.first().text(), date.first().text(), num.first().text(),price.first().text(), text.first().text(), null);
+        }else {
+            myItem = new MyItem(boardtitle.first().text(), writer.first().text(), date.first().text(), num.first().text(),price.first().text(), text.first().text(), ABSOLUTE_FILE_PATH + s);
+        }
 
-        MyItem myItem = new MyItem(boardtitle.first().text(), writer.first().text(), date.first().text(), num.first().text(),price.first().text(), text.first().text());
         for(int i=0; i<c_writer.size(); i++){
             Comment c = new Comment();
 

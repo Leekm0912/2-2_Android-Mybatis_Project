@@ -99,14 +99,22 @@
         </LinearLayout>
 
 
-        <TextView
-            android:id="@+id/mainText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="본문"
-            android:textSize="18sp" />
     </LinearLayout>
+
+    <ImageView
+        android:id="@+id/childBoardImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="400dp"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/mainText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="본문"
+        android:textSize="18sp" />
 
     <ListView
         android:layout_width="match_parent"

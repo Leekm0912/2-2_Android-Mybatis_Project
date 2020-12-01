@@ -7,12 +7,16 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.icu.text.SimpleDateFormat;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.StrictMode;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioButton;
@@ -24,14 +28,23 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 public class SellPage extends AppCompatActivity {
@@ -41,6 +54,11 @@ public class SellPage extends AppCompatActivity {
     EditText price;
     TextInputEditText text;
     RadioGroup radioGroup;
+    //img관련
+    Button imageUpload;
+    ImageView imgVwSelected;
+    File tempSelectFile;
+    byte[] fileArray;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,22 +72,31 @@ public class SellPage extends AppCompatActivity {
         price = findViewById(R.id.price_input);
         text = findViewById(R.id.content);
         radioGroup = findViewById(R.id.choose_group);
+        imageUpload = findViewById(R.id.imageUpload);
+        imgVwSelected = findViewById(R.id.imageView);
     }
 
     public void postSubmit(View v) {
-
+        Map<String, String> param = new HashMap<>();
         RadioButton rb = findViewById(radioGroup.getCheckedRadioButtonId());
         String url = "http://220.66.111.200:8889/yonam-market/market/postUpload.jsp";
         String parse_data = null;
         ContentValues contentValues = new ContentValues();
         // AsyncTask를 통해 HttpURLConnection 수행.
         try {
+            AppData appData = (AppData) getApplication();
+
+            param.put("가격",price.getText().toString());
+            param.put("제목", title.getText().toString());
+            param.put("내용", text.getText().toString());
+            param.put("게시판", rb.getText().toString());
+            param.put("ID", appData.getUser().getID());
+
             int price_value = Integer.parseInt(price.getText().toString());
             contentValues.put("제목", title.getText().toString());
             contentValues.put("가격", price_value);
             contentValues.put("내용", text.getText().toString());
             contentValues.put("게시판", rb.getText().toString());
-            AppData appData = (AppData) getApplication();
             contentValues.put("ID", appData.getUser().getID());
         }
         /*catch (NumberFormatException ne){ //숫자가 아닌값을 price에 입력했을때.
@@ -81,86 +108,80 @@ public class SellPage extends AppCompatActivity {
             Toast.makeText(this, "빈칸이 있거나 잘못된 가격입니다.",Toast.LENGTH_SHORT).show();
             return;
         }
+        try{
+            //File이 널이 아니면 이미지 전송
+            if(tempSelectFile != null) {
+                String result = DoFileUpload("http://220.66.111.200:8889/yonam-market/market/img_upload/uploadAction.jsp",tempSelectFile, param);  //해당 함수를 통해 이미지 전송.
+                Parse p = new Parse((AppData)getApplication() ,result);
+                if(p.getNotice().equals("success")){
+                    //Intent intent = new Intent(this,MainMenu.class);
+                    //startActivityForResult(intent,0);//액티비티 띄우기
+                    Log.i("삽입완료","삽입완료");
+                    Toast.makeText(this,"그림+게시물 작성 완료",Toast.LENGTH_SHORT).show();
+                }else{
+                    return;
+                }
+            }else{
+                NetworkTask networkTask = new NetworkTask(this, url, contentValues, (AppData)getApplication());
+                try {
+                    parse_data =  networkTask.execute().get(); // get()함수를 이용해 작업결과를 불러올 수 있음.
+                    Log.i("1",parse_data);
+                } catch (ExecutionException e) {
+                    e.printStackTrace();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
-        NetworkTask networkTask = new NetworkTask(this, url, contentValues, (AppData)getApplication());
-        try {
-            parse_data =  networkTask.execute().get(); // get()함수를 이용해 작업결과를 불러올 수 있음.
-            Log.i("1",parse_data);
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
+                Parse p = new Parse((AppData)getApplication() ,parse_data);
+                if(p.getNotice().equals("success")){
+                    //Intent intent = new Intent(this,MainMenu.class);
+                    //startActivityForResult(intent,0);//액티비티 띄우기
+                    Log.i("삽입완료","삽입완료");
+                    Toast.makeText(this,"게시물 작성 완료",Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    return;
+                }
+            }
+        }catch(Exception e){
             e.printStackTrace();
         }
 
-        Parse p = new Parse((AppData)getApplication() ,parse_data);
-        if(p.getNotice().equals("success")){
-            //Intent intent = new Intent(this,MainMenu.class);
-            //startActivityForResult(intent,0);//액티비티 띄우기
-            Log.i("삽입완료","삽입완료");
-            Toast.makeText(this,"게시물 작성 완료",Toast.LENGTH_SHORT).show();
-        }
+
         finish();
     }
 
-    /*
-    public void click(View v){
+    public void imgUpload(View v){
         Intent intent = new Intent();
-
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-
+        // intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         intent.setType("image/*");
-
-        startActivityForResult(intent, GET_GALLERY_IMAGE);
-
-        getImagePathToUri(Uri.parse("image/*"));
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, 1);
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        Toast.makeText(getBaseContext(), "resultCode : " + data, Toast.LENGTH_SHORT).show();
-
-        if (requestCode == GET_GALLERY_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            if (resultCode == Activity.RESULT_OK) {
-                try {
-                    img_path = getImagePathToUri(data.getData()); //이미지의 URI를 얻어 경로값으로 반환.
-                    Toast.makeText(getBaseContext(), "img_path : " + img_path, Toast.LENGTH_SHORT).show();
-                    //이미지를 비트맵형식으로 반환
-                    image_bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), data.getData());
-                    int reWidth = (int) (getWindowManager().getDefaultDisplay().getWidth());
-                    int reHeight = (int) (getWindowManager().getDefaultDisplay().getHeight());
-
-                    //image_bitmap 으로 받아온 이미지의 사이즈를 임의적으로 조절함. width: 400 , height: 300
-                    image_bitmap_copy = Bitmap.createScaledBitmap(image_bitmap, 400, 300, true);
-                    ImageView image = (ImageView) findViewById(R.id.imageView);  //이미지를 띄울 위젯 ID값
-                    image.setImageBitmap(image_bitmap_copy);
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+    @Override protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    public String getImagePathToUri(Uri data) {
-        //사용자가 선택한 이미지의 정보를 받아옴
-        String[] proj = {MediaStore.Images.Media.DATA};
-        Cursor cursor = managedQuery(data, proj, null, null, null);
-        int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-        cursor.moveToFirst();
-
-        //이미지의 경로 값
-        String imgPath = cursor.getString(column_index);
-        Log.d("test", imgPath);
-
-        //이미지의 이름 값
-        String imgName = imgPath.substring(imgPath.lastIndexOf("/") + 1);
-        Toast.makeText(this, "이미지 이름 : " + imgName, Toast.LENGTH_SHORT).show();
-
-        DoFileUpload("http://leekm.ddns.net:8080/yonam-market/market/img_upload/uploadAction.jsp", imgPath);  //해당 함수를 통해 이미지 전송.
-
-        return imgPath;
+        if (requestCode != 1 || resultCode != RESULT_OK) {
+            return;
+        }
+        Uri dataUri = data.getData();
+        imgVwSelected.setImageURI(dataUri);
+        try {
+            // ImageView 에 이미지 출력
+            InputStream in = getContentResolver().openInputStream(dataUri);
+            Bitmap image = BitmapFactory.decodeStream(in);
+            imgVwSelected.setImageBitmap(image);
+            in.close();
+            // 선택한 이미지 임시 저장
+            String date = new SimpleDateFormat("yyyy_MM_dd_hh_mm_ss").format(new Date());
+            tempSelectFile = new File(Environment.getExternalStorageDirectory() + "/", "temp_" + date + ".jpeg");
+            OutputStream out = new FileOutputStream(tempSelectFile);
+            image.compress(Bitmap.CompressFormat.JPEG, 100, out);
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+        }
+        //btnImageSend.setEnabled(true);
     }
 
     public String getRealPathFromURI(Uri contentUri) {
@@ -178,26 +199,33 @@ public class SellPage extends AppCompatActivity {
 
 // 여기서부터가 jsp 이미지를 보내는 코드입니다.
 
-    public void DoFileUpload(String apiUrl, String absolutePath) {
-        HttpFileUpload(apiUrl, "", absolutePath);
-
-    }
-    public void HttpFileUpload(String urlString, String params, String fileName) {
+    public String DoFileUpload(String urlString, File file, Map<String, String> params) {
         String lineEnd = "\r\n";
 
         String twoHyphens = "--";
 
         String boundary = "*****";
 
-        try {
+        String stringBuffer = ""; // 결과(html문서)를 담을 변수
 
-            File sourceFile = new File(fileName);
+        try {
+            StringBuilder postData = new StringBuilder();
+            for(Map.Entry<String, String> param : params.entrySet()) {
+                if(postData.length() != 0) postData.append('&');
+                postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
+                postData.append('=');
+                postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
+            }
+            Log.i("==========================파라미터========================",postData.toString());
+            urlString = urlString + "?" + postData.toString();
+
+            File sourceFile = file;
 
             DataOutputStream dos;
 
             if (!sourceFile.isFile()) {
 
-                Log.e("uploadFile", "Source File not exist :" + fileName);
+                Log.e("uploadFile", "Source File not exist :" + sourceFile.getName());
 
             } else {
 
@@ -223,7 +251,13 @@ public class SellPage extends AppCompatActivity {
 
                 conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
 
-                conn.setRequestProperty("uploaded_file", fileName);
+                conn.setRequestProperty("uploaded_file", sourceFile.getName());
+
+                conn.setRequestProperty("price",params.get("가격"));
+                conn.setRequestProperty("title",params.get("제목"));
+                conn.setRequestProperty("text",params.get("내용"));
+                conn.setRequestProperty("board",params.get("게시판"));
+                conn.setRequestProperty("ID",params.get("ID"));
 
                 // write data
 
@@ -231,7 +265,7 @@ public class SellPage extends AppCompatActivity {
 
                 dos.writeBytes(twoHyphens + boundary + lineEnd);
 
-                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + fileName + "\"" + lineEnd);
+                dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + sourceFile.getName() + "\"" + lineEnd);
 
                 dos.writeBytes(lineEnd);
 
@@ -275,19 +309,19 @@ public class SellPage extends AppCompatActivity {
 
                 dos.flush(); // finish upload...
 
+
+
                 if (conn.getResponseCode() == 200) {
 
                     InputStreamReader tmp = new InputStreamReader(conn.getInputStream(), "UTF-8");
 
                     BufferedReader reader = new BufferedReader(tmp);
 
-                    StringBuffer stringBuffer = new StringBuffer();
-
                     String line;
 
                     while ((line = reader.readLine()) != null) {
 
-                        stringBuffer.append(line);
+                        stringBuffer += line;
 
                     }
 
@@ -297,6 +331,7 @@ public class SellPage extends AppCompatActivity {
 
                 dos.close();
 
+
             }
 
         } catch (Exception e) {
@@ -304,7 +339,8 @@ public class SellPage extends AppCompatActivity {
             e.printStackTrace();
 
         }
-
+        Log.i("========결과 Line=====",stringBuffer);
+        return stringBuffer;
     }
-    */
+
 }
