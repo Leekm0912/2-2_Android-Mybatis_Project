@@ -46,6 +46,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 public class SellPage extends AppCompatActivity {
     private final int GET_GALLERY_IMAGE = 200;
@@ -86,16 +87,23 @@ public class SellPage extends AppCompatActivity {
         try {
             AppData appData = (AppData) getApplication();
 
+            String title_str = title.getText().toString();
+            String text_str = text.getText().toString();
+            Pattern pattern = Pattern.compile("[<>+%]");
+            if(pattern.matcher(title_str).find() || pattern.matcher(text_str).find()){ // 특수문자 들어있으면 true 리턴
+                Toast.makeText(this,"사용 불가능한 특수문자가 포함되어 있습니다.",Toast.LENGTH_SHORT).show();
+                return;
+            }
             param.put("가격",price.getText().toString());
-            param.put("제목", title.getText().toString());
-            param.put("내용", text.getText().toString());
+            param.put("제목", URLEncoder.encode(title_str, "utf-8"));
+            param.put("내용", URLEncoder.encode(text_str, "utf-8"));
             param.put("게시판", rb.getText().toString());
             param.put("ID", appData.getUser().getID());
 
             int price_value = Integer.parseInt(price.getText().toString());
-            contentValues.put("제목", title.getText().toString());
+            contentValues.put("제목", URLEncoder.encode(title_str, "utf-8"));
+            contentValues.put("내용", URLEncoder.encode(text_str, "utf-8"));
             contentValues.put("가격", price_value);
-            contentValues.put("내용", text.getText().toString());
             contentValues.put("게시판", rb.getText().toString());
             contentValues.put("ID", appData.getUser().getID());
         }

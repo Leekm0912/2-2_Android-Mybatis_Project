@@ -32,8 +32,10 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 public class ChildBoard extends AppCompatActivity {
     XmlPullParser parser; // 파서
@@ -183,8 +185,14 @@ public class ChildBoard extends AppCompatActivity {
         // AsyncTask를 통해 HttpURLConnection 수행.
         ContentValues contentValues = new ContentValues();
         c_text = findViewById(R.id.comment_input);
+        String comment_str =  c_text.getText().toString();
+        Pattern pattern = Pattern.compile("[<>+%]");
+        if(pattern.matcher(comment_str).find()){ // 특수문자 들어있으면 true 리턴
+            Toast.makeText(this,"사용 불가능한 특수문자가 포함되어 있습니다.",Toast.LENGTH_SHORT).show();
+            return;
+        }
         try {
-            contentValues.put("내용", c_text.getText().toString());
+            contentValues.put("내용", URLEncoder.encode(comment_str, "utf-8"));
         }catch (Exception e){
             e.printStackTrace();
             Toast.makeText(this, "댓글을 입력하세요",Toast.LENGTH_SHORT).show();

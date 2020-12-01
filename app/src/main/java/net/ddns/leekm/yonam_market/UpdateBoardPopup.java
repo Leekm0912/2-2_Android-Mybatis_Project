@@ -13,7 +13,10 @@ import android.widget.Toast;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.concurrent.ExecutionException;
+import java.util.regex.Pattern;
 
 public class UpdateBoardPopup extends AppCompatActivity {
     String type;
@@ -59,14 +62,24 @@ public class UpdateBoardPopup extends AppCompatActivity {
             new_intent.putExtra("result", "Update_Board");
             String url = "http://220.66.111.200:8889/yonam-market/market/updateBoard.jsp";
             String parse_data = null;
-
+            String title_str = update_title.getText().toString();
+            String text_str = update_text.getText().toString();
+            Pattern pattern = Pattern.compile("[<>+%]");
+            if(pattern.matcher(title_str).find() || pattern.matcher(text_str).find()){ // 특수문자 들어있으면 true 리턴
+                Toast.makeText(this,"사용 불가능한 특수문자가 포함되어 있습니다.",Toast.LENGTH_SHORT).show();
+                return;
+            }
             // AsyncTask를 통해 HttpURLConnection 수행.
             ContentValues contentValues = new ContentValues();
-            contentValues.put("글번호", pos);
-            contentValues.put("제목",update_title.getText().toString());
-            contentValues.put("내용",update_text.getText().toString());
-            contentValues.put("가격",update_price.getText().toString());
-            contentValues.put("게시판",board);
+            try {
+                contentValues.put("글번호", pos);
+                contentValues.put("제목", URLEncoder.encode(title_str, "utf-8"));
+                contentValues.put("내용", URLEncoder.encode(text_str, "utf-8"));
+                contentValues.put("가격", update_price.getText().toString());
+                contentValues.put("게시판", board);
+            }catch (UnsupportedEncodingException e){
+                e.printStackTrace();
+            }
 
             NetworkTask networkTask = new NetworkTask(this, url, contentValues, (AppData)getApplication());
             try {
