@@ -91,7 +91,7 @@ public class SellPage extends AppCompatActivity implements ActivityCompat.OnRequ
     public void postSubmit(View v) {
         Map<String, String> param = new HashMap<>();
         RadioButton rb = findViewById(radioGroup.getCheckedRadioButtonId());
-        String url = "http://220.66.111.200:8889/yonam-market/market/postUpload.jsp";
+        String url = AppData.SERVER_FULL_URL+"/yonam-market/market/postUpload.jsp";
         String parse_data = null;
         ContentValues contentValues = new ContentValues();
         // AsyncTask를 통해 HttpURLConnection 수행.
@@ -130,7 +130,7 @@ public class SellPage extends AppCompatActivity implements ActivityCompat.OnRequ
         try{
             //File이 널이 아니면 이미지 전송
             if(tempSelectFile != null) {
-                String result = DoFileUpload("http://220.66.111.200:8889/yonam-market/market/img_upload/uploadAction.jsp",tempSelectFile, param);  //해당 함수를 통해 이미지 전송.
+                String result = DoFileUpload(AppData.SERVER_FULL_URL+"/yonam-market/market/img_upload/uploadAction.jsp",tempSelectFile, param);  //해당 함수를 통해 이미지 전송.
                 Parse p = new Parse((AppData)getApplication() ,result);
                 if(p.getNotice().equals("success")){
                     //Intent intent = new Intent(this,MainMenu.class);

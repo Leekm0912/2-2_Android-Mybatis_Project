@@ -24,7 +24,7 @@ public class FileUploadUtils {
                 .addFormDataPart("files", file.getName(), RequestBody.create(MultipartBody.FORM, file))
                 .build();
         Request request = new Request.Builder()
-                .url("http://220.66.111.200:8889/yonam-market/market/img_upload/img")
+                .url(AppData.SERVER_FULL_URL+"/yonam-market/market/img_upload/img")
         // Server URL 은 본인 IP를 입력
                 .post(requestBody)
                 .build();

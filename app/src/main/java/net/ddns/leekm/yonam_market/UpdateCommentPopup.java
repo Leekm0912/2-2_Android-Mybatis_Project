@@ -52,7 +52,7 @@ public class UpdateCommentPopup extends AppCompatActivity {
         Intent new_intent = new Intent();
 
         new_intent.putExtra("result", "Update_Comment");
-        String url = "http://220.66.111.200:8889/yonam-market/market/updateComment.jsp";
+        String url = AppData.SERVER_FULL_URL+"/yonam-market/market/updateComment.jsp";
         String parse_data = null;
 
         // AsyncTask를 통해 HttpURLConnection 수행.

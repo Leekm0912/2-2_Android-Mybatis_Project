@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button login = findViewById(R.id.login);
         login.setOnClickListener((v)->{
-            String url = "http://220.66.111.200:8889/yonam-market/market/signIn.jsp";
+            String url = AppData.SERVER_FULL_URL+"/yonam-market/market/signIn.jsp";
             String parse_data = null;
 
             String id = insertID.getText().toString();

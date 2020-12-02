@@ -48,7 +48,7 @@ public class MainBoard extends AppCompatActivity {
 
 
     public void init(){
-        String url = "http://220.66.111.200:8889/yonam-market/market/getBoard.jsp";
+        String url = AppData.SERVER_FULL_URL+"/yonam-market/market/getBoard.jsp";
         ContentValues contentValues = new ContentValues();
         contentValues.put("게시판",spinner2.getSelectedItem().toString());
         String parse_data = null;
@@ -124,7 +124,7 @@ public class MainBoard extends AppCompatActivity {
     }
 
     public void search(View v){
-        String url = "http://220.66.111.200:8889/yonam-market/market/searchBoard.jsp";
+        String url = AppData.SERVER_FULL_URL+"/yonam-market/market/searchBoard.jsp";
         ContentValues contentValues = new ContentValues();
         contentValues.put("게시판",spinner2.getSelectedItem().toString());
         EditText editText = findViewById(R.id.search_text);
@@ -159,7 +159,7 @@ public class MainBoard extends AppCompatActivity {
     public class MyOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
 
-            String url = "http://220.66.111.200:8889/yonam-market/market/getBoard.jsp";
+            String url = AppData.SERVER_FULL_URL+"/yonam-market/market/getBoard.jsp";
             ContentValues contentValues = new ContentValues();
             contentValues.put("게시판",spinner2.getSelectedItem().toString());
             String parse_data = null;

@@ -60,7 +60,7 @@ public class UpdateBoardPopup extends AppCompatActivity {
         Intent new_intent = new Intent();
         if(type.equals("mainBoard")){ // 게시물 업데이트
             new_intent.putExtra("result", "Update_Board");
-            String url = "http://220.66.111.200:8889/yonam-market/market/updateBoard.jsp";
+            String url = AppData.SERVER_FULL_URL+"/yonam-market/market/updateBoard.jsp";
             String parse_data = null;
             String title_str = update_title.getText().toString();
             String text_str = update_text.getText().toString();

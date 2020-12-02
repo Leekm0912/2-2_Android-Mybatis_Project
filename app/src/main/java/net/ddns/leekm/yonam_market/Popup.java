@@ -47,7 +47,7 @@ public class Popup extends Activity {
         Intent new_intent = new Intent();
         if(type.equals("mainBoard")){ // 게시물 삭제
             new_intent.putExtra("result", "Delete_Board");
-            String url = "http://220.66.111.200:8889/yonam-market/market/deleteBoard.jsp";
+            String url = AppData.SERVER_FULL_URL+"/yonam-market/market/deleteBoard.jsp";
             String parse_data = null;
 
             // AsyncTask를 통해 HttpURLConnection 수행.
@@ -69,7 +69,7 @@ public class Popup extends Activity {
         }else if(type.equals("Comment")){ // 댓글 삭제
             new_intent.putExtra("result", "Comment");
             new_intent.putExtra("result", "Delete_Board");
-            String url = "http://220.66.111.200:8889/yonam-market/market/deleteComment.jsp";
+            String url = AppData.SERVER_FULL_URL+"/yonam-market/market/deleteComment.jsp";
             String parse_data = null;
 
             // AsyncTask를 통해 HttpURLConnection 수행.
