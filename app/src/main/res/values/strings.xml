@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">YONAM_Market</string>
+    <string name="app_name">연암마켓</string>
     <string name="title_activity_login">Sign in</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password</string>
