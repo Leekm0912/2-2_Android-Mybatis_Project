@@ -17,6 +17,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.FutureTask;
 
@@ -27,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     private EditText insertID;
     private EditText insertPW;
     private TextView version_textView;
+    private Button login;
+    private Button signup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +45,24 @@ public class MainActivity extends AppCompatActivity {
         insertID = findViewById(R.id.insertID);
         insertPW = findViewById(R.id.insertPW);
 
+        login = findViewById(R.id.login);
+        signup = findViewById(R.id.signup);
+        new InternetCheck(internet -> { // 서버 연결 체크
+            if(internet) {
+                login.setEnabled(true);
+                signup.setEnabled(true);
+            }else{
+                Toast.makeText(this, "서버off", Toast.LENGTH_LONG).show();
+            }
+        });
+
         version_textView = findViewById(R.id.version);
         version_textView.setText("Version : "+getVersionInfo(this)+"  "); // 버젼 가져오기
 
-        Button login = findViewById(R.id.login);
+
+
+
+
         login.setOnClickListener((v)->{
             String url = AppData.SERVER_FULL_URL+"/yonam-market/market/signIn.jsp";
             String parse_data = null;
@@ -81,7 +100,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        Button signup = findViewById(R.id.signup);
         signup.setOnClickListener((v)->{
             Intent intent = new Intent(MainActivity.this,SignUp.class);
             startActivityForResult(intent,0);//액티비티 띄우기
@@ -99,4 +117,34 @@ public class MainActivity extends AppCompatActivity {
         return version;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // 화면이 다시 보이면 서버연결체크 다시.
+        new InternetCheck(internet -> { // 서버 연결 체크
+            if(internet) {
+                login.setEnabled(true);
+                signup.setEnabled(true);
+            }else{
+                Toast.makeText(this, "서버off", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+}
+
+class InternetCheck extends AsyncTask<Void,Void,Boolean> {
+    private Consumer mConsumer;
+    public  interface Consumer { void accept(Boolean internet); }
+
+    public  InternetCheck(Consumer consumer) { mConsumer = consumer; execute(); }
+
+    @Override protected Boolean doInBackground(Void... voids) { try {
+        Socket sock = new Socket();
+        sock.connect(new InetSocketAddress(AppData.SERVER_IP, Integer.parseInt(AppData.SERVER_PORT)), 1500);
+        sock.close();
+        Log.i("====================서버연결 성공======================","");
+        return true;
+    } catch (IOException e) { e.printStackTrace(); return false; } }
+
+    @Override protected void onPostExecute(Boolean internet) { mConsumer.accept(internet); }
 }
