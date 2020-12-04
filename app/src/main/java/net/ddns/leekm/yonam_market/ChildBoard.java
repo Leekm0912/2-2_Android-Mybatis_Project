@@ -93,52 +93,56 @@ public class ChildBoard extends AppCompatActivity {
         writer.setText(item.getUserName());
         mainText.setText(item.getMainText());
         price.setText(item.getPrice());
-        Thread uThread = new Thread() {
-            @Override
-            public void run(){
-                try{
-                    //서버에 올려둔 이미지 URL
-                    URL url = new URL(item.getImagePath());
-                    //Web에서 이미지 가져온 후 ImageView에 지정할 Bitmap 만들기
+        Log.i("=================item.getImagePath()================",item.getImagePath());
+        if(!item.getImagePath().contains("null")) { // null이 포함되어 있다면. => 이미지 없으면 주소~~/null 로 표시됨
+            Thread uThread = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        //서버에 올려둔 이미지 URL
+                        URL url = new URL(item.getImagePath());
+                        //Web에서 이미지 가져온 후 ImageView에 지정할 Bitmap 만들기
                         /* URLConnection 생성자가 protected로 선언되어 있으므로
 
                      개발자가 직접 HttpURLConnection 객체 생성 불가 */
 
-                    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
                         /* openConnection()메서드가 리턴하는 urlConnection 객체는
 
                         HttpURLConnection의 인스턴스가 될 수 있으므로 캐스팅해서 사용한다*/
 
-                    conn.setDoInput(true); //Server 통신에서 입력 가능한 상태로 만듦
-                    conn.connect(); //연결된 곳에 접속할 때 (connect() 호출해야 실제 통신 가능함)
+                        conn.setDoInput(true); //Server 통신에서 입력 가능한 상태로 만듦
+                        conn.connect(); //연결된 곳에 접속할 때 (connect() 호출해야 실제 통신 가능함)
 
-                    InputStream is = conn.getInputStream(); //inputStream 값 가져오기
-                    bitmap = BitmapFactory.decodeStream(is); // Bitmap으로 반환
-                    Log.i("======================bitmap======================",bitmap.toString());
+                        InputStream is = conn.getInputStream(); //inputStream 값 가져오기
+                        bitmap = BitmapFactory.decodeStream(is); // Bitmap으로 반환
+                        Log.i("======================bitmap======================", bitmap.toString());
 
-                }catch (MalformedURLException e){
-                    e.printStackTrace();
-                }catch (IOException e){
-                    e.printStackTrace();
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
+            };
+            uThread.start(); // 작업 Thread 실행
+            try {
+
+                //메인 Thread는 별도의 작업을 완료할 때까지 대기한다!
+                //join() 호출하여 별도의 작업 Thread가 종료될 때까지 메인 Thread가 기다림
+                //join() 메서드는 InterruptedException을 발생시킨다.
+                uThread.join();
+
+                //작업 Thread에서 이미지를 불러오는 작업을 완료한 뒤
+                //UI 작업을 할 수 있는 메인 Thread에서 ImageView에 이미지 지정
+                imageView.setImageBitmap(bitmap);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-        };
-        uThread.start(); // 작업 Thread 실행
-        try{
-
-            //메인 Thread는 별도의 작업을 완료할 때까지 대기한다!
-            //join() 호출하여 별도의 작업 Thread가 종료될 때까지 메인 Thread가 기다림
-            //join() 메서드는 InterruptedException을 발생시킨다.
-            uThread.join();
-
-            //작업 Thread에서 이미지를 불러오는 작업을 완료한 뒤
-            //UI 작업을 할 수 있는 메인 Thread에서 ImageView에 이미지 지정
-            imageView.setImageBitmap(bitmap);
-        }catch (InterruptedException e){
-            e.printStackTrace();
+        }else{
+            imageView.setVisibility(View.GONE);
         }
-
         // ListView 작업
         listView = findViewById(R.id.comment);
         myAdapter = new MyAdapter(this,R.layout.comment_layout, item.getComment());
