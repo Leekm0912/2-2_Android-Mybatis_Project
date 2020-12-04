@@ -120,13 +120,15 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // 화면이 다시 보이면 서버연결체크 다시.
+        // 화면이 다시 보이면 서버연결체크 다시. 일단 버튼 비활성화 시킴.
+        login.setEnabled(false);
+        signup.setEnabled(false);
         new InternetCheck(internet -> { // 서버 연결 체크
             if(internet) {
                 login.setEnabled(true);
                 signup.setEnabled(true);
             }else{
-                login.setEnabled(false);
+                login.setEnabled(false); // 왜 인지 여기서는 안되네; 다른 어플에서는 되는데;;
                 signup.setEnabled(false);
                 Toast.makeText(this, "서버off", Toast.LENGTH_LONG).show();
             }
