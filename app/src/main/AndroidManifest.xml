@@ -31,7 +31,9 @@
             android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".SellPage" />
         <activity android:name=".MainBoard" />
-        <activity android:name=".MainMenu" />
+        <activity android:name=".MainMenu" >
+
+        </activity>
         <activity android:name=".SignUp" />
         <activity android:name=".MainActivity">
             <intent-filter>

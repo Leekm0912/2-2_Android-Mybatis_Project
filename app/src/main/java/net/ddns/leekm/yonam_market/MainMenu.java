@@ -21,6 +21,9 @@ public class MainMenu extends AppCompatActivity {
 
         TextView textView = findViewById(R.id.info);
         AppData appData = (AppData)getApplication();
+        if(appData.getUser().getID().equals("null")){ //  오류 발생시 메인으로.
+            finish();
+        }
         textView.setText("접속계정 : "+appData.getUser().getID() +"\n"+"이름 : "+ appData.getUser().get이름());
     }
 
