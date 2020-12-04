@@ -126,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
                 login.setEnabled(true);
                 signup.setEnabled(true);
             }else{
+                login.setEnabled(false);
+                signup.setEnabled(false);
                 Toast.makeText(this, "서버off", Toast.LENGTH_LONG).show();
             }
         });
