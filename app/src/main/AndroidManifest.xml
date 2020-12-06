@@ -1,47 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="net.ddns.leekm.yonam_market">
-    <!-- 네트워크 사용에 대한 퍼미션 -->
+    package="net.ddns.leekm.eco_design_app">
+
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.DIAL_PHONE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:name=".AppData"
         android:allowBackup="true"
-        android:icon="@drawable/app_icon"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-
+        android:theme="@style/Theme.Eco_Design_App"
         android:usesCleartextTraffic="true"
-        android:requestLegacyExternalStorage="true"
-        >
-        <activity android:name=".MyinfoUpdate"></activity>
-        <activity
-            android:name=".MyInfo"
-            android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
+        android:requestLegacyExternalStorage="true">
+        <activity android:name=".UploadNoticeBoard"></activity>
+        <activity android:name=".NoticeChildBoard" />
+        <activity android:name=".Notice_Board" />
         <activity android:name=".UpdateCommentPopup" />
         <activity android:name=".UpdateBoardPopup" />
         <activity
             android:name=".Popup"
             android:theme="@android:style/Theme.Holo.Dialog.NoActionBar" />
-        <activity android:name=".ChildBoard"
-            android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".SellPage" />
-        <activity android:name=".MainBoard" />
-        <activity android:name=".MainMenu" >
+        <activity android:name=".ChildBoard" />
+        <activity android:name=".borad" />
+        <activity android:name=".DIY_booking" />
+        <activity android:name=".ConsultingBooking" />
+        <activity android:name=".booktype" />
 
-        </activity>
-        <activity android:name=".SignUp" />
-        <activity android:name=".MainActivity">
+        <meta-data
+            android:name="com.naver.maps.map.CLIENT_ID"
+            android:value="w853dymsz0" />
+
+        <activity android:name=".add_log" />
+        <activity android:name=".info1" />
+        <activity android:name=".login" />
+        <activity android:name=".main_layout">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MainActivity" />
+        <activity android:name=".login_layout" />
     </application>
 
 </manifest>

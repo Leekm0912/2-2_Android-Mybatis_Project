@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--
+    root 엘리먼트 이름은 mapper입니다.
+    ibatis에서는 SqlMap이었습니다.
+    namespace는 지정을 해도 되고 안해도 됩니다. ibatis에서는 네임스페이스 사용여부를
+    설정에서 명시적으로 선언해줘야 했지만, myBatis에서는 따로 설정할 필요가 없이, namespace attribute
+    가 없으면 네임스페이스 안쓰는걸로, 있으면 쓰는걸로 자동으로 되는듯 싶습니다.
+-->
+<mapper namespace="ldg.mybatis.repository.mapper.Eco_design_Mapper">
+	<!-- select 구문 -->
+	<select id="selectUserByPrimaryKey" parameterType="String" resultType="ldg.mybatis.model.사용자">
+        SELECT * FROM 사용자 where id=#{ID};
+    </select>
+
+	<select id="getDIYBoard" resultType="ldg.mybatis.model.게시글">
+        SELECT 게시글번호, 등록자 as 사용자_ID, 등록일, 제목, 내용 
+		FROM view_DIY예약;
+    </select>
+
+	<select id="getReserveBoard" resultType="ldg.mybatis.model.게시글">
+        SELECT 게시글번호, 등록자 as 사용자_ID, 등록일, 제목, 내용 
+		FROM view_상담예약;
+    </select>
+
+	<select id="getNoticeBoard" resultType="ldg.mybatis.model.게시글">
+        SELECT 게시글번호, 등록자 as 사용자_ID, 등록일, 제목, 내용 , filePath
+		FROM view_공지사항;
+    </select>
+
+	<select id="getDIYDetailBoard" parameterType="String" resultType="ldg.mybatis.model.게시글">
+        SELECT 게시글번호, 등록자 as 사용자_ID, 등록일, 제목, 내용 
+		FROM view_DIY예약
+		WHERE 게시글번호=#{num}
+    </select>
+
+	<select id="getReserveDetailBoard" parameterType="String" resultType="ldg.mybatis.model.게시글">
+        SELECT 게시글번호, 등록자 as 사용자_ID, 등록일, 제목, 내용 
+		FROM view_상담예약
+		WHERE 게시글번호=#{num}
+    </select>
+
+	<select id="getNoticeDetailBoard" parameterType="String" resultType="ldg.mybatis.model.게시글">
+        SELECT 게시글번호, 등록자 as 사용자_ID, 등록일, 제목, 내용, filePath
+		FROM view_공지사항
+		WHERE 게시글번호=#{num}
+    </select>
+
+	<select id="getBoardNum" resultType="String">
+        SELECT 게시글번호 FROM 게시글 ORDER BY 게시글번호 desc LIMIT 1;
+    </select>
+
+	<select id="getCommentNum" parameterType="String" resultType="String">
+        SELECT 댓글번호 FROM 댓글 
+		ORDER BY 댓글번호 desc LIMIT 1;
+    </select>
+
+	<select id="selectBoardComment" parameterType="String" resultType="ldg.mybatis.model.Comment">
+        SELECT 댓글번호, 게시글번호, 등록일, 작성자, 내용 
+		FROM 댓글
+		WHERE 게시글번호=#{num}
+		order by 등록일;
+    </select>
+	<!-- select 구문 -->
+	<!-- insert 구문 -->
+    <insert id="insertUser" parameterType="ldg.mybatis.model.사용자">
+        insert into 사용자 values(#{ID}, #{PW}, #{이름}, #{생년월일}, #{전화번호}, #{주소});
+    </insert>
+
+	<insert id="postUpload" parameterType="ldg.mybatis.model.게시글">
+        INSERT INTO 게시글 VALUES (#{게시글번호}, #{사용자_ID}, #{등록일}, #{분류});
+    </insert>
+
+	<insert id="postUploadDIY" parameterType="ldg.mybatis.model.게시글">
+        INSERT INTO DIY예약 VALUES (#{게시글번호}, #{제목}, #{내용});
+    </insert>
+
+	<insert id="postUploadReserve" parameterType="ldg.mybatis.model.게시글">
+        INSERT INTO 상담예약 VALUES (#{게시글번호}, #{제목}, #{내용});
+    </insert>
+
+	<insert id="postUploadNotice" parameterType="ldg.mybatis.model.게시글">
+        INSERT INTO 공지사항 VALUES (#{게시글번호}, #{제목}, #{내용}, #{filePath});
+    </insert>
+
+	<insert id="insertComment" parameterType="ldg.mybatis.model.Comment">
+        INSERT INTO 댓글 VALUES (#{댓글번호}, #{게시글번호}, #{등록일}, #{작성자}, #{내용});
+    </insert>
+	<!-- insert 구문 -->
+	<!-- delete 구문 -->
+	<delete id="deleteBoard" parameterType="String">
+		delete from 게시글
+		where 게시글번호 = #{board_num};
+	</delete>
+	
+	<delete id="deleteComment" parameterType="String">
+		delete from 댓글
+		where 댓글번호=#{comment_num};
+	</delete>
+	<!-- delete 구문 -->
+	<!-- update 구문 -->
+	<update id="updateBoard" parameterType="ldg.mybatis.model.게시글">
+		update 게시글
+		set 등록일 = #{등록일}
+		where 게시글번호 = #{게시글번호};
+	</update>
+	
+	<update id="updateDIYBoard" parameterType="ldg.mybatis.model.게시글">
+		update DIY예약
+		set 제목=#{제목}, 내용=#{내용}
+		where 게시글번호=#{게시글번호};
+	</update>
+	
+	<update id="updateReserveBoard" parameterType="ldg.mybatis.model.게시글">
+		update 상담예약
+		set 제목=#{제목}, 내용=#{내용}
+		where 게시글번호=#{게시글번호};
+	</update>
+	
+	<update id="updateNoticeBoard" parameterType="ldg.mybatis.model.게시글">
+		update 공지사항
+		set 제목=#{제목}, 내용=#{내용}
+		where 게시글번호=#{게시글번호};
+	</update>
+	
+	<update id="updateComment" parameterType="ldg.mybatis.model.Comment">
+		update 댓글 
+		set 내용 = #{내용}, 등록일 = #{등록일}
+		where 댓글번호 = #{댓글번호};
+	</update>
+	<!-- update 구문 -->
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	
+	<!-- 트랜젝션 관리와 커넥션 풀링을 위한 환경설정 -->
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="com.mysql.cj.jdbc.Driver" />
+				<property name="url" value="jdbc:mysql://localhost:3306/eco_design?serverTimezone=Asia/Seoul" />
+				<property name="username" value="root" />
+				<property name="password" value="dongsu14" />
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<!-- SQL 코드와 매핑 정의를 가지는 XML 파일인 mapper 의 목록을 지정한다. -->
+	<mappers>
+		<mapper resource="ldg/mybatis/repository/mapper/Eco_design_Mapper.xml"/>
+	</mappers>
+</configuration>
