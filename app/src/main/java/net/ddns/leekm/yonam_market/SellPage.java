@@ -54,21 +54,18 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
+// 판매 등록 페이지.
 public class SellPage extends AppCompatActivity implements ActivityCompat.OnRequestPermissionsResultCallback{
-
-    private final int GET_GALLERY_IMAGE = 200;
-    TextView t;
-    EditText title;
-    EditText price;
-    TextInputEditText text;
-    RadioGroup radioGroup;
+    EditText title; // 입력한 제목
+    EditText price; // 입력한 가격
+    TextInputEditText text; // 입력한 본문 내용
+    RadioGroup radioGroup; // 게시판 종류를 선택할 라디오 그룹
     //img관련
     Button imageUpload;
     ImageView imgVwSelected;
     File tempSelectFile;
-    byte[] fileArray;
-    // 앱을 실행하기 위해 필요한 퍼미션을 정의합니다.
-    String[] REQUIRED_PERMISSIONS  = {Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE};
+    // 어플리케이션 동작을 위해 필요한 퍼미션을 불러옴.
+    String[] REQUIRED_PERMISSIONS  = AppData.REQUIRED_PERMISSIONS;
     // 퍼미선 작업 결과 코드
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     @Override
@@ -88,8 +85,11 @@ public class SellPage extends AppCompatActivity implements ActivityCompat.OnRequ
         imgVwSelected = findViewById(R.id.imageView);
     }
 
+    // 게시물 등록
     public void postSubmit(View v) {
+        // 이미지 업로드시 서버에 줄 파라미터
         Map<String, String> param = new HashMap<>();
+        
         RadioButton rb = findViewById(radioGroup.getCheckedRadioButtonId());
         String url = AppData.SERVER_FULL_URL+"/yonam-market/market/postUpload.jsp";
         String parse_data = null;
@@ -118,17 +118,13 @@ public class SellPage extends AppCompatActivity implements ActivityCompat.OnRequ
             contentValues.put("게시판", rb.getText().toString());
             contentValues.put("ID", appData.getUser().getID());
         }
-        /*catch (NumberFormatException ne){ //숫자가 아닌값을 price에 입력했을때.
-            ne.printStackTrace();
-            Toast.makeText(this, "가격은 숫자만 가능합니다.", Toast.LENGTH_SHORT).show();
-        }*/
         catch(Exception e){
             e.printStackTrace();
             Toast.makeText(this, "빈칸이 있거나 잘못된 가격입니다.",Toast.LENGTH_SHORT).show();
             return;
         }
         try{
-            //File이 널이 아니면 이미지 전송
+            //File이 널이 아니면 서버에 이미지 전송
             if(tempSelectFile != null) {
                 String result = DoFileUpload(AppData.SERVER_FULL_URL+"/yonam-market/market/img_upload/uploadAction.jsp",tempSelectFile, param);  //해당 함수를 통해 이미지 전송.
                 Parse p = new Parse((AppData)getApplication() ,result);
@@ -137,10 +133,10 @@ public class SellPage extends AppCompatActivity implements ActivityCompat.OnRequ
                     //startActivityForResult(intent,0);//액티비티 띄우기
                     Log.i("삽입완료","삽입완료");
                     Toast.makeText(this,"그림+게시물 작성 완료",Toast.LENGTH_SHORT).show();
-                }else{
+                }else{ // success가 아닐시 메소드 종료
                     return;
                 }
-            }else{
+            }else{ // 이미지 없이 처리
                 NetworkTask networkTask = new NetworkTask(this, url, contentValues, (AppData)getApplication());
                 try {
                     parse_data =  networkTask.execute().get(); // get()함수를 이용해 작업결과를 불러올 수 있음.
@@ -153,12 +149,10 @@ public class SellPage extends AppCompatActivity implements ActivityCompat.OnRequ
 
                 Parse p = new Parse((AppData)getApplication() ,parse_data);
                 if(p.getNotice().equals("success")){
-                    //Intent intent = new Intent(this,MainMenu.class);
-                    //startActivityForResult(intent,0);//액티비티 띄우기
                     Log.i("삽입완료","삽입완료");
                     Toast.makeText(this,"게시물 작성 완료",Toast.LENGTH_SHORT).show();
                 }
-                else{
+                else{ // success가 아닐시 메소드 종료
                     return;
                 }
             }
@@ -166,10 +160,10 @@ public class SellPage extends AppCompatActivity implements ActivityCompat.OnRequ
             e.printStackTrace();
         }
 
-
         finish();
     }
 
+    // 서버에 이미지 저장해주는 메소드
     public void imgUpload(View v){
         // 1. 외부 저장소 퍼미션을 가지고 있는지 체크합니다.
         int writeExternalStoragePermission = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -204,9 +198,6 @@ public class SellPage extends AppCompatActivity implements ActivityCompat.OnRequ
     // 퍼미션 요청(ActivityCompat.requestPermissions)에 대한 결과를 리턴받으려면
     // OnRequestPermissionsResultCallback 콜백의 onRequestPermissionsResult 메소드를 구현해줘야 합니다.
     // onRequestPermissionsResult에서 수신된 결과에서 ActivityCompat.requestPermissions를 사용한 퍼미션 요청을 구별하기 위해 사용됩니다.
-
-
-
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grandResults) {
         // 요청 코드가 PERMISSIONS_REQUEST_CODE 이고, 요청한 퍼미션 개수만큼 수신되었다면
@@ -271,163 +262,90 @@ public class SellPage extends AppCompatActivity implements ActivityCompat.OnRequ
         //btnImageSend.setEnabled(true);
     }
 
-    public String getRealPathFromURI(Uri contentUri) {
-        String res = null;
-        String[] proj = {MediaStore.Images.Media.DATA};
-        Cursor cursor = this.getContentResolver().query(contentUri, proj, null, null, null);
-        if (cursor.moveToFirst()) {
-            int column_index = cursor.getColumnIndex(MediaStore.Images.Media.DATA);
-            res = cursor.getString(column_index);
-        }
-        cursor.close();
-        return res;
-
-    }
-
-// 여기서부터가 jsp 이미지를 보내는 코드입니다.
-
+    // 서버에 이미지를 업로드하는 코드.
     public String DoFileUpload(String urlString, File file, Map<String, String> params) {
         String lineEnd = "\r\n";
-
         String twoHyphens = "--";
-
         String boundary = "*****";
-
         String stringBuffer = ""; // 결과(html문서)를 담을 변수
-
         try {
             StringBuilder postData = new StringBuilder();
+            // 파라미터 조합
             for(Map.Entry<String, String> param : params.entrySet()) {
                 if(postData.length() != 0) postData.append('&');
                 postData.append(URLEncoder.encode(param.getKey(), "UTF-8"));
                 postData.append('=');
                 postData.append(URLEncoder.encode(String.valueOf(param.getValue()), "UTF-8"));
             }
-            Log.i("==========================파라미터========================",postData.toString());
+            // 조합한 파라미터 url에 연결
             urlString = urlString + "?" + postData.toString();
 
             File sourceFile = file;
-
             DataOutputStream dos;
-
-            if (!sourceFile.isFile()) {
-
+            if (!sourceFile.isFile()) { // 파일이 없으면
                 Log.e("uploadFile", "Source File not exist :" + sourceFile.getName());
-
-            } else {
-
+            } else { // 파일이 있으면
                 FileInputStream mFileInputStream = new FileInputStream(sourceFile);
-
                 URL connectUrl = new URL(urlString);
-
+                
                 // open connection
-
                 HttpURLConnection conn = (HttpURLConnection) connectUrl.openConnection();
-
                 conn.setDoInput(true);
-
                 conn.setDoOutput(true);
-
                 conn.setUseCaches(false);
-
                 conn.setRequestMethod("POST");
-
                 conn.setRequestProperty("Connection", "Keep-Alive");
-
                 conn.setRequestProperty("ENCTYPE", "multipart/form-data");
-
                 conn.setRequestProperty("Content-Type", "multipart/form-data;boundary=" + boundary);
-
                 conn.setRequestProperty("uploaded_file", sourceFile.getName());
-
                 conn.setRequestProperty("price",params.get("가격"));
                 conn.setRequestProperty("title",params.get("제목"));
                 conn.setRequestProperty("text",params.get("내용"));
                 conn.setRequestProperty("board",params.get("게시판"));
                 conn.setRequestProperty("ID",params.get("ID"));
-
+                
                 // write data
-
                 dos = new DataOutputStream(conn.getOutputStream());
-
                 dos.writeBytes(twoHyphens + boundary + lineEnd);
-
                 dos.writeBytes("Content-Disposition: form-data; name=\"uploaded_file\";filename=\"" + sourceFile.getName() + "\"" + lineEnd);
-
                 dos.writeBytes(lineEnd);
-
-
-
+                
                 int bytesAvailable = mFileInputStream.available();
-
                 int maxBufferSize = 1024 * 1024;
-
                 int bufferSize = Math.min(bytesAvailable, maxBufferSize);
-
-
-
+                
                 byte[] buffer = new byte[bufferSize];
-
                 int bytesRead = mFileInputStream.read(buffer, 0, bufferSize);
-
-
-
+                
                 // read image
-
                 while (bytesRead > 0) {
-
                     dos.write(buffer, 0, bufferSize);
-
                     bytesAvailable = mFileInputStream.available();
-
                     bufferSize = Math.min(bytesAvailable, maxBufferSize);
-
                     bytesRead = mFileInputStream.read(buffer, 0, bufferSize);
-
                 }
-
-
 
                 dos.writeBytes(lineEnd);
-
                 dos.writeBytes(twoHyphens + boundary + twoHyphens + lineEnd);
-
                 mFileInputStream.close();
-
                 dos.flush(); // finish upload...
-
-
-
+                
                 if (conn.getResponseCode() == 200) {
-
                     InputStreamReader tmp = new InputStreamReader(conn.getInputStream(), "UTF-8");
-
                     BufferedReader reader = new BufferedReader(tmp);
-
                     String line;
-
                     while ((line = reader.readLine()) != null) {
-
                         stringBuffer += line;
-
                     }
-
                 }
 
                 mFileInputStream.close();
-
                 dos.close();
-
-
             }
-
         } catch (Exception e) {
-
             e.printStackTrace();
-
         }
-        Log.i("========결과 Line=====",stringBuffer);
+        Log.i("========작업결과=====",stringBuffer);
         return stringBuffer;
     }
-
 }

@@ -9,6 +9,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Map;
 
+// 인터넷 연결해서 정보를 가져오는 클래스. NetworkTask에서 사용
 public class RequestHttpURLConnection {
     public String request(String _url, ContentValues _params){
 

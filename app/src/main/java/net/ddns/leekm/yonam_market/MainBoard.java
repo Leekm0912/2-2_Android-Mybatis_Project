@@ -35,18 +35,68 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
+// 구매 게시판
 public class MainBoard extends AppCompatActivity {
-    XmlPullParser parser; // 파서
     ArrayList<MyItem> arrayList; // 파싱해온 값을 저장해줄 리스트
-    String xml; // xml의 url
     MyAdapter myAdapter; // 어댑터
-    TextView title; // 제목
-    TextView desc; // 자기소개
     Spinner spinner2;
     ListView listView;
-    TextView price;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main_board);
+        // 스피너 작업
+        // 스피너 목록 불러오기. xml에 되어있는걸 왜인지 못불러와서 일단 하드코딩 해놓음. 수정예정
+        ArrayList arrayList = new ArrayList<>();
+        arrayList.add("전자기기");
+        arrayList.add("의류");
+        arrayList.add("도서");
+        arrayList.add("식품");
+        arrayList.add("기타");
 
+        // 스피너 연결 부분.
+        spinner2 = (Spinner)findViewById(R.id.spinner);
+        ArrayAdapter arrayAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item,arrayList);
+        spinner2.setAdapter(arrayAdapter);
+        spinner2.setOnItemSelectedListener(new MyOnItemSelectedListener());
+        // 스피너 작업
+        
+        // 화면 로딩
+        init();
+
+        // 리스트뷰 항목(게시글)을 누르면 상세 게시글창으로 이동
+        listView.setOnItemClickListener((parent, view, position, l_position)->{
+            // 명시적 호출
+            Intent intent = new Intent(this,ChildBoard.class);
+            TextView textView = view.findViewById(R.id.num);
+            Log.i("Intent에 넣을 num값(글번호) : ",textView.getText().toString());
+            intent.putExtra("board_num", textView.getText().toString());
+            Log.i("Intent에 넣을 게시판종류 : ",spinner2.getSelectedItem().toString());
+            intent.putExtra("board", spinner2.getSelectedItem().toString());
+            startActivityForResult(intent,0);//액티비티 띄우기
+        });
+        
+        // 리스트뷰 항목(게시글)을 길게 누르면 수정, 삭제 팝업 생성
+        listView.setOnItemLongClickListener((parent, view, position, id)->{
+            Intent intent = new Intent(this, Popup.class);
+            TextView writer = view.findViewById(R.id.writer);
+            TextView num = view.findViewById(R.id.num);
+
+            String board_num = writer.getText().toString();
+            AppData appData = (AppData)getApplication();
+            if(board_num.equals(appData.getUser().get이름()) || appData.getUser().get이름().equals("admin")) { // 현재 접속중인 계정의 이름과 게시글의 이름이 같다면
+                intent.putExtra("data", "작업을 선택해 주세요.");
+                intent.putExtra("type", "mainBoard");
+                intent.putExtra("board", spinner2.getSelectedItem().toString());
+                intent.putExtra("pos", num.getText().toString());
+                startActivityForResult(intent, 0);
+            }
+            return true;
+        });
+    }
+
+    // 화면 로딩
     public void init(){
         String url = AppData.SERVER_FULL_URL+"/yonam-market/market/getBoard.jsp";
         ContentValues contentValues = new ContentValues();
@@ -74,55 +124,8 @@ public class MainBoard extends AppCompatActivity {
         listView.setAdapter(myAdapter);
     }
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_board);
-        //스피너
-        ArrayList arrayList = new ArrayList<>();
-        arrayList.add("전자기기");
-        arrayList.add("의류");
-        arrayList.add("도서");
-        arrayList.add("식품");
-        arrayList.add("기타");
-
-        spinner2 = (Spinner)findViewById(R.id.spinner);
-        ArrayAdapter arrayAdapter = new ArrayAdapter<>(getApplicationContext(),android.R.layout.simple_spinner_dropdown_item,arrayList);
-        spinner2.setAdapter(arrayAdapter);
-        spinner2.setOnItemSelectedListener(new MyOnItemSelectedListener());
-        //스피너
-
-        init();
-
-        listView.setOnItemClickListener((parent, view, position, l_position)->{
-            // 암시적 호출하기
-            Intent intent = new Intent(this,ChildBoard.class);
-            TextView textView = view.findViewById(R.id.num);
-            Log.i("Intent에 넣을 num값(글번호) : ",textView.getText().toString());
-            intent.putExtra("board_num", textView.getText().toString());
-            Log.i("Intent에 넣을 게시판종류 : ",spinner2.getSelectedItem().toString());
-            intent.putExtra("board", spinner2.getSelectedItem().toString());
-            startActivityForResult(intent,0);//액티비티 띄우기
-        });
-
-        listView.setOnItemLongClickListener((parent, view, position, id)->{
-            Intent intent = new Intent(this, Popup.class);
-            TextView writer = view.findViewById(R.id.writer);
-            TextView num = view.findViewById(R.id.num);
-
-            String board_num = writer.getText().toString();
-            AppData appData = (AppData)getApplication();
-            if(board_num.equals(appData.getUser().get이름()) || appData.getUser().get이름().equals("admin")) { // 현재 접속중인 계정의 이름과 게시글의 이름이 같다면
-                intent.putExtra("data", "작업을 선택해 주세요.");
-                intent.putExtra("type", "mainBoard");
-                intent.putExtra("board", spinner2.getSelectedItem().toString());
-                intent.putExtra("pos", num.getText().toString());
-                startActivityForResult(intent, 0);
-            }
-            return true;
-        });
-    }
-
+    // 검색버튼 누를시 동작.
+    // 입력한 단어가 포함되어있는 게시글 표시. 빈칸이면 모두
     public void search(View v){
         String url = AppData.SERVER_FULL_URL+"/yonam-market/market/searchBoard.jsp";
         ContentValues contentValues = new ContentValues();
@@ -149,16 +152,18 @@ public class MainBoard extends AppCompatActivity {
         myAdapter = new MyAdapter(this,R.layout.listview_layout,arrayList);
         listView.setAdapter(myAdapter);
     }
-
+    
+    // 액티비티가 다시 보일때 화면 다시 로딩
     @Override
     protected void onResume() {
         super.onResume();
+        // 화면 로딩
         init();
     }
 
+    // 스피너 동작. 분류에 따라 게시판을 불러옴
     public class MyOnItemSelectedListener implements AdapterView.OnItemSelectedListener {
         public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-
             String url = AppData.SERVER_FULL_URL+"/yonam-market/market/getBoard.jsp";
             ContentValues contentValues = new ContentValues();
             contentValues.put("게시판",spinner2.getSelectedItem().toString());
@@ -190,7 +195,8 @@ public class MainBoard extends AppCompatActivity {
         }
 
     }
-
+    
+    // 리스트뷰 동작할 어댑터
     class MyAdapter extends BaseAdapter {
         Context context;
         LayoutInflater inflater;
@@ -244,41 +250,29 @@ public class MainBoard extends AppCompatActivity {
             writer.setText(list.get(position).getUserName());
             price.setText(list.get(position).getPrice());
             bitmap = null;
-            Thread uThread = new Thread() {
-                @Override
-                public void run(){
-                    try{
-                        //서버에 올려둔 이미지 URL
-                        URL url = new URL(list.get(position).getImagePath());
-                        //Web에서 이미지 가져온 후 ImageView에 지정할 Bitmap 만들기
-                        /* URLConnection 생성자가 protected로 선언되어 있으므로
 
-                     개발자가 직접 HttpURLConnection 객체 생성 불가 */
+            //Web에서 이미지 가져온 후 ImageView에 지정할 Bitmap 만들기
+            Thread uThread = new Thread(()->{
+                try{
+                    //서버에 올려둔 이미지 URL
+                    URL url = new URL(list.get(position).getImagePath());
 
-                        HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+                    /* openConnection()메서드가 리턴하는 urlConnection 객체는
+                    HttpURLConnection의 인스턴스가 될 수 있으므로 캐스팅해서 사용한다*/
+                    HttpURLConnection conn = (HttpURLConnection)url.openConnection();
 
-                        /* openConnection()메서드가 리턴하는 urlConnection 객체는
+                    conn.setDoInput(true); //Server 통신에서 입력 가능한 상태로 만듦
+                    conn.connect(); //연결된 곳에 접속할 때 (connect() 호출해야 실제 통신 가능함)
 
-                        HttpURLConnection의 인스턴스가 될 수 있으므로 캐스팅해서 사용한다*/
-
-                        conn.setDoInput(true); //Server 통신에서 입력 가능한 상태로 만듦
-                        conn.connect(); //연결된 곳에 접속할 때 (connect() 호출해야 실제 통신 가능함)
-
-                        InputStream is = conn.getInputStream(); //inputStream 값 가져오기
-                        bitmap = BitmapFactory.decodeStream(is); // Bitmap으로 반환
-                        Log.i("======================bitmap======================",bitmap.toString());
-
-                    }catch (MalformedURLException e){
-                        e.printStackTrace();
-                    }catch (IOException e){
-                        e.printStackTrace();
-                    }
+                    InputStream is = conn.getInputStream(); //inputStream 값 가져오기
+                    bitmap = BitmapFactory.decodeStream(is); // Bitmap으로 반환
+                } catch (IOException e){
+                    e.printStackTrace();
                 }
-            };
+            });
 
             uThread.start(); // 작업 Thread 실행
             try{
-
                 //메인 Thread는 별도의 작업을 완료할 때까지 대기한다!
                 //join() 호출하여 별도의 작업 Thread가 종료될 때까지 메인 Thread가 기다림
                 //join() 메서드는 InterruptedException을 발생시킨다.
@@ -293,6 +287,4 @@ public class MainBoard extends AppCompatActivity {
             return convertView;
         }
     }
-
-
 }

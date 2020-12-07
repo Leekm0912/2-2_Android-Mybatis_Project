@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 
+// 추후 구현 예정 (내정보)
 public class MyInfo extends Activity {
     TextView text;
     @Override

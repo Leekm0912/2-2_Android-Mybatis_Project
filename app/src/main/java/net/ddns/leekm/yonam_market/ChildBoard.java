@@ -32,31 +32,28 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
 public class ChildBoard extends AppCompatActivity {
-    XmlPullParser parser; // 파서
-    ArrayList<MyItem> arrayList; // 파싱해온 값을 저장해줄 리스트
-    String xml; // xml의 url
     MyAdapter myAdapter; // 어댑터
     ImageView imageView; // 이미지
     Bitmap bitmap; // 이미지 가져올때 저장할곳
     TextView title; // 제목
-    TextView desc; // 자기소개
     TextView num; // 글 번호
     TextView date; //글 작성일
     TextView writer; // 글 작성자
     TextView mainText; // 글 본문
-    TextInputEditText c_text; // 댓글내용
-    Spinner spinner2;
-    String board_num;
-    MyItem item;
-    ListView listView;
     TextView price; //가격
+    TextInputEditText c_text; // 댓글내용
+    String board_num; // 게시글 번호
+    MyItem item; // tomcat의 게시글 model과 동일.
+    ListView listView; // 댓글목록이 담길 리스트뷰
 
+    // 화면 로딩
     public void init(){
         String url = AppData.SERVER_FULL_URL+"/yonam-market/market/getDetailBoard.jsp";
         ContentValues contentValues = new ContentValues();
@@ -69,23 +66,14 @@ public class ChildBoard extends AppCompatActivity {
         NetworkTask networkTask = new NetworkTask(this, url, contentValues, (AppData)getApplication());
         try {
             parse_data =  networkTask.execute().get(); // get()함수를 이용해 작업결과를 불러올 수 있음.
-            Log.i("1",parse_data);
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
 
         Parse p = new Parse((AppData)getApplication() ,parse_data);
-        if(p.getNotice().equals("success")){
+        if(p.getNotice().equals("success")){ // 서버에서 작업에 성공하면 success를 리턴해줌.
             item = p.getMyItem();
         }
-
-        title = findViewById(R.id.board_title);
-        num = findViewById(R.id.board_num);
-        date = findViewById(R.id.board_date);
-        writer = findViewById(R.id.board_writer);
-        mainText = findViewById(R.id.mainText);
-        price = findViewById(R.id.c_price);
-        imageView = findViewById(R.id.childBoardImage);
 
         title.setText(item.getTitle());
         num.setText(item.getPostNumber());
@@ -94,41 +82,30 @@ public class ChildBoard extends AppCompatActivity {
         mainText.setText(item.getMainText());
         price.setText(item.getPrice());
         Log.i("=================item.getImagePath()================",item.getImagePath());
-        if(!item.getImagePath().contains("null")) { // null이 포함되어 있다면. => 이미지 없으면 주소~~/null 로 표시됨
-            Thread uThread = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        //서버에 올려둔 이미지 URL
-                        URL url = new URL(item.getImagePath());
-                        //Web에서 이미지 가져온 후 ImageView에 지정할 Bitmap 만들기
-                        /* URLConnection 생성자가 protected로 선언되어 있으므로
+        // 경로에 null이 포함되어 있지 않다면 작업실행
+        // => 이미지 없으면 경로~~/null 로 표시됨 있다면 경로~~/이미지
+        if(!item.getImagePath().contains("null")) {
+            //Web에서 이미지 가져온 후 ImageView에 지정할 Bitmap 만드는 과정
+            Thread uThread = new Thread(()->{
+                try {
+                    //서버에 올려둔 이미지 URL
+                    URL new_url = new URL(item.getImagePath());
 
-                     개발자가 직접 HttpURLConnection 객체 생성 불가 */
+                    /* openConnection()메서드가 리턴하는 urlConnection 객체는
+                    HttpURLConnection의 인스턴스가 될 수 있으므로 캐스팅해서 사용한다*/
+                    HttpURLConnection conn = (HttpURLConnection) new_url.openConnection();
 
-                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setDoInput(true); //Server 통신에서 입력 가능한 상태로 만듦
+                    conn.connect(); //연결된 곳에 접속할 때 (connect() 호출해야 실제 통신 가능함)
 
-                        /* openConnection()메서드가 리턴하는 urlConnection 객체는
-
-                        HttpURLConnection의 인스턴스가 될 수 있으므로 캐스팅해서 사용한다*/
-
-                        conn.setDoInput(true); //Server 통신에서 입력 가능한 상태로 만듦
-                        conn.connect(); //연결된 곳에 접속할 때 (connect() 호출해야 실제 통신 가능함)
-
-                        InputStream is = conn.getInputStream(); //inputStream 값 가져오기
-                        bitmap = BitmapFactory.decodeStream(is); // Bitmap으로 반환
-                        Log.i("======================bitmap======================", bitmap.toString());
-
-                    } catch (MalformedURLException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    InputStream is = conn.getInputStream(); //inputStream 값 가져오기
+                    bitmap = BitmapFactory.decodeStream(is); // Bitmap으로 반환
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            };
+            });
             uThread.start(); // 작업 Thread 실행
             try {
-
                 //메인 Thread는 별도의 작업을 완료할 때까지 대기한다!
                 //join() 호출하여 별도의 작업 Thread가 종료될 때까지 메인 Thread가 기다림
                 //join() 메서드는 InterruptedException을 발생시킨다.
@@ -140,7 +117,7 @@ public class ChildBoard extends AppCompatActivity {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }else{
+        }else{ // 이미지 없을때 이미지뷰 안보이게.
             imageView.setVisibility(View.GONE);
         }
         // ListView 작업
@@ -154,12 +131,22 @@ public class ChildBoard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_child_board);
 
+        title = findViewById(R.id.board_title);
+        num = findViewById(R.id.board_num);
+        date = findViewById(R.id.board_date);
+        writer = findViewById(R.id.board_writer);
+        mainText = findViewById(R.id.mainText);
+        price = findViewById(R.id.c_price);
+        imageView = findViewById(R.id.childBoardImage);
+        
+        //화면 로딩
         init();
 
         listView.setOnItemClickListener((parent, view, position, l_position)->{
             // 작업안함.
         });
 
+        // 길게 누르면 댓글 수정, 삭제창 열리게.
         listView.setOnItemLongClickListener((parent, view, position, id)->{
             Intent new_intent = new Intent(this, Popup.class);
             TextView c_writer = view.findViewById(R.id.c_writer);
@@ -179,9 +166,11 @@ public class ChildBoard extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+        // 화면이 다시 보이면 바뀐게 있는지 로딩해줌
         init();
     }
-
+    
+    // 댓글 작성
     public void onClick(View v){
         String url = AppData.SERVER_FULL_URL+"/yonam-market/market/insertComment.jsp";
         String parse_data = null;
@@ -196,6 +185,7 @@ public class ChildBoard extends AppCompatActivity {
             return;
         }
         try {
+            // URL인코딩 형식으로 인코딩
             contentValues.put("내용", URLEncoder.encode(comment_str, "utf-8"));
         }catch (Exception e){
             e.printStackTrace();

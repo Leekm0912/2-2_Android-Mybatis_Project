@@ -18,6 +18,7 @@ import java.net.URLEncoder;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
+// 게시글 수정
 public class UpdateBoardPopup extends AppCompatActivity {
     String type;
     String pos;

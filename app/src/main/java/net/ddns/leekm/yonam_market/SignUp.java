@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+// 회원가입
 public class SignUp extends AppCompatActivity {
 
     private EditText id;
@@ -30,8 +31,9 @@ public class SignUp extends AppCompatActivity {
         pw = (EditText) findViewById(R.id.PW);
         phone = (EditText) findViewById(R.id.Phone);
         name = (EditText) findViewById(R.id.Name);
-
         Button submit = findViewById(R.id.submit);
+
+        // 확인 버튼 누를시.
         submit.setOnClickListener((v)->{
             // URL 설정.
             String url = AppData.SERVER_FULL_URL+"/yonam-market/market/signUp.jsp";
@@ -71,6 +73,4 @@ public class SignUp extends AppCompatActivity {
         });
 
     }
-
-
 }

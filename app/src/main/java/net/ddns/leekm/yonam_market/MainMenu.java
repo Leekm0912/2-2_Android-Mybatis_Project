@@ -27,16 +27,19 @@ public class MainMenu extends AppCompatActivity {
         textView.setText("접속계정 : "+appData.getUser().getID() +"\n"+"이름 : "+ appData.getUser().get이름());
     }
 
+    // 구매 클릭시
     public void buy(View v){
         Intent intent = new Intent(this,MainBoard.class);
         startActivityForResult(intent,BUY);//액티비티 띄우기
     }
 
+    // 판매 클릭시
     public void sell(View v){
         Intent intent = new Intent(this,SellPage.class);
         startActivityForResult(intent,SELL);//액티비티 띄우기
     }
 
+    // 내 정보 추가예졍
     public void myInfo(View v){
         Intent intent = new Intent(this, MyInfo.class);
         startActivityForResult(intent,MYINFO);

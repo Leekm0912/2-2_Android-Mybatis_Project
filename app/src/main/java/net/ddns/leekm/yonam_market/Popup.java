@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import java.util.concurrent.ExecutionException;
 
+// 팝업 화면.
 public class Popup extends Activity {
     TextView textView;
     String type;
@@ -31,10 +32,12 @@ public class Popup extends Activity {
         //UI 객체생성
         textView = findViewById(R.id.text);
 
-        //데이터 가져오기
+        //인텐트 가져오기
         Intent intent = getIntent();
+        // 팝업창에 보여줄 텍스트를 인텐트에서 불러와서 텍스트뷰에 넣음.
         String data = intent.getStringExtra("data");
         textView.setText(data);
+        // 인텐트에서 기타 정보들을 저장
         type = intent.getStringExtra("type");
         pos = intent.getStringExtra("pos");
         board = intent.getStringExtra("board");
@@ -89,7 +92,6 @@ public class Popup extends Activity {
                 Log.i("댓글 삭제 완료","삭제완료");
             }
         }
-
 
         setResult(RESULT_OK, new_intent);
         //액티비티(팝업) 닫기

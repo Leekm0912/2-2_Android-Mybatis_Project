@@ -2,6 +2,7 @@ package net.ddns.leekm.yonam_market;
 
 import java.util.ArrayList;
 
+// tomcat의 게시글 model과 동일.
 class MyItem{
     private String title;
     private String userName;

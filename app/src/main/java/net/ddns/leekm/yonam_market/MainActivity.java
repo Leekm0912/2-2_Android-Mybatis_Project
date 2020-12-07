@@ -25,13 +25,13 @@ import java.util.concurrent.FutureTask;
 
 import cz.msebera.android.httpclient.concurrent.FutureCallback;
 
+// 첫 화면.
 public class MainActivity extends AppCompatActivity {
-
-    private EditText insertID;
-    private EditText insertPW;
-    private TextView version_textView;
-    private Button login;
-    private Button signup;
+    private EditText insertID; // 아이디 입력창
+    private EditText insertPW; // 패스워드 입력창
+    private TextView version_textView; // 버젼을 보여줄 텍스트뷰
+    private Button login; // 로그인 버튼
+    private Button signup; //  회원가입 버튼
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,11 +58,8 @@ public class MainActivity extends AppCompatActivity {
 
         version_textView = findViewById(R.id.version);
         version_textView.setText("Version : "+getVersionInfo(this)+"  "); // 버젼 가져오기
-
-
-
-
-
+        
+        // 로그인 클릭시 동작
         login.setOnClickListener((v)->{
             String url = AppData.SERVER_FULL_URL+"/yonam-market/market/signIn.jsp";
             String parse_data = null;
@@ -72,10 +69,10 @@ public class MainActivity extends AppCompatActivity {
             if(id.matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*") || pw.matches(".*[ㄱ-ㅎㅏ-ㅣ가-힣]+.*")) { // 한글이 포함되면.
                 Toast.makeText(this,"영문자, 특수문자만 사용 가능합니다.",Toast.LENGTH_SHORT).show();
                 return;
-            }else if(id.equals("")){
+            }else if(id.equals("")){ // 아이디가 입력되지 않았다면
                 Toast.makeText(this,"아이디를 입력해 주세요",Toast.LENGTH_SHORT).show();
                 return;
-            }else if(pw.equals("")){
+            }else if(pw.equals("")){ // 패스워드가 입력되지 않았다면
                 Toast.makeText(this,"패스워드를 입력해 주세요",Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -93,19 +90,21 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Parse p = new Parse((AppData)getApplication() ,parse_data);
-            if(p.getNotice().equals("success")){
-                p.setUser();
+            if(p.getNotice().equals("success")){ // 정상 작업시 서버가 success를 리턴해줌
+                p.setUser(); // 불러온 사용자 정보를 application 객체에 저장해서 전역정보로 만들어줌.
                 Intent intent = new Intent(MainActivity.this,MainMenu.class);
                 startActivityForResult(intent,0);//액티비티 띄우기
             }
         });
 
+        // 회원가입 클릭시 동작
         signup.setOnClickListener((v)->{
             Intent intent = new Intent(MainActivity.this,SignUp.class);
             startActivityForResult(intent,0);//액티비티 띄우기
         });
     }
-
+    
+    // gradle에서 버젼정보를 불러옴
     public String getVersionInfo(Context context){
         String version = null;
         try {

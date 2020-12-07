@@ -16,6 +16,7 @@ import java.net.URLEncoder;
 import java.util.concurrent.ExecutionException;
 import java.util.regex.Pattern;
 
+// 댓글 수정
 public class UpdateCommentPopup extends AppCompatActivity {
     String type;
     String pos;
