@@ -1,9 +1,7 @@
 package net.ddns.leekm.yonam_market;
 
-import android.app.Application;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.widget.Toast;
 

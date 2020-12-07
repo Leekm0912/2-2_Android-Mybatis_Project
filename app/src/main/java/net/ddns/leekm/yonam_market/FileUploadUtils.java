@@ -1,11 +1,7 @@
 package net.ddns.leekm.yonam_market;
 
-import android.telecom.Call;
 import android.util.Log;
 
-import java.io.File;
-import java.io.IOException;
-import android.util.Log;
 import java.io.File;
 import java.io.IOException;
 

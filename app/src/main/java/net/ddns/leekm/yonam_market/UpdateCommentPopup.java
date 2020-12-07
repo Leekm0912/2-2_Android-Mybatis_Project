@@ -72,7 +72,6 @@ public class UpdateCommentPopup extends AppCompatActivity {
             Toast.makeText(this, "댓글을 입력하세요",Toast.LENGTH_SHORT).show();
             return;
         }
-        //contentValues.put("게시판_num",board);
 
         NetworkTask networkTask = new NetworkTask(this, url, contentValues, (AppData)getApplication());
         try {

@@ -1,12 +1,11 @@
 package net.ddns.leekm.yonam_market;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainMenu extends AppCompatActivity {
     // intent에서 request code로 줄 값들.
