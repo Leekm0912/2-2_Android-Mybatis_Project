@@ -1,17 +1,15 @@
-plugins {
-    id 'com.android.application'
-}
+apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "net.ddns.leekm.eco_design_app"
+        applicationId "net.ddns.leekm.yonam_market"
         minSdkVersion 26
-        targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        targetSdkVersion 29
+        versionCode 11
+        versionName "1.11"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -23,23 +21,26 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
+
 }
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    // 네이버 지도 SDK
-    implementation 'com.naver.maps:map-sdk:3.9.1'
-    // 파서
-    implementation 'org.jsoup:jsoup:1.11.3'
-
     implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
-    testImplementation 'junit:junit:4.+'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.lifecycle:lifecycle-extensions:2.0.0'
+    testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation group: 'cz.msebera.android', name: 'httpclient', version: '4.4.1.2'
+    implementation 'org.jsoup:jsoup:1.11.3'
+    //퍼미션 관련 코드에서 Snackbar를 사용하기 위해 필요합니다.
+    //implementation 'com.android.support:design:27.1.1'
+    implementation 'com.squareup.okhttp3:okhttp:3.4.2'
 }

@@ -1,2 +1,2 @@
+rootProject.name='YONAM_Market'
 include ':app'
-rootProject.name = "Eco_Design_App"
